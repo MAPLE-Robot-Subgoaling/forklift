@@ -5,6 +5,7 @@
 
 # Package Files #
 *.jar
+!lib/burlap-3.0.0-SNAPSHOT-jar-with-dependencies.jar
 *.war
 *.ear
 
