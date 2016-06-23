@@ -13,7 +13,7 @@ import static edu.umbc.cs.forklift.forklift.ATT_D;
 
 public class FLState implements MutableState{
 
-	private int direction;
+	private double direction;
 	private double x;
 	private double y;
 	
@@ -22,7 +22,7 @@ public class FLState implements MutableState{
 	public FLState(){
 	}
 	
-	public FLState(double x, double y, int direction)
+	public FLState(double x, double y, double direction)
 	{
 		this.x = x;
 		this.y = y;
@@ -79,7 +79,7 @@ public class FLState implements MutableState{
 			}
 			else if(variableKey.equals(ATT_D))
 			{
-				this.direction = StateUtilities.stringOrNumber(value).intValue();
+				this.direction = StateUtilities.stringOrNumber(value).doubleValue();
 				return this;
 			}
 			else{

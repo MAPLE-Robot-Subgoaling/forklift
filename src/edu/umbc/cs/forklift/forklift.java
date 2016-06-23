@@ -60,6 +60,14 @@ public class forklift implements DomainGenerator{
 	
 	public static class FLModel implements FullStateModel
 	{
+		double speed;
+		double rotationalSpeed;
+		
+		public FLModel(double speed, double rotationalSpeed)
+		{
+			this.speed = speed;
+			this.rotationalSpeed = rotationalSpeed;
+		}
 
 		public State sample(State s, Action a) {
 			s = s.copy();
@@ -69,62 +77,38 @@ public class forklift implements DomainGenerator{
 		public State move(State s, Action a) {
 			double px = (Double)s.get(ATT_X);
 			double py = (Double)s.get(ATT_Y);
-			int direction = (Integer)s.get(ATT_D);
+			double direction = (Double)s.get(ATT_D);
 			
 			String actionName = a.actionName();
 			if(actionName.equals(ROTATE_COUNTERCLOCKWISE)){
-				direction -= 1;
+				direction -= rotationalSpeed;
 				if(direction < 0){
-					direction += 4;
+					direction += 360;
 				}
+				((MutableState)s).set(ATT_D, direction);
 			}
 			else if(actionName.equals(ROTATE_CLOCKWISE)){
-				direction += 1;
-				if(direction > 3){
-					direction -= 4;
-				}
+				direction += rotationalSpeed;
+				direction %= 360;
+				((MutableState)s).set(ATT_D, direction);
 			}
 			else if(actionName.equals(ACTION_FORWARD)){
-				if(direction == 0){
-					py += 0.02;
-					((MutableState)s).set(ATT_X, px);
-				}
-				else if(direction == 1){
-					px += 0.02;
-					((MutableState)s).set(ATT_X, px);
-				}
-				else if(direction == 2){
-					py -= 0.02;
-					((MutableState)s).set(ATT_Y, py);
-				}
-				else{
-					px -= 0.02;
-					((MutableState)s).set(ATT_Y, py);
-				}
+				double deltax = Math.cos(direction) * speed;
+				double deltay = Math.sin(direction) * speed;
+				px += deltax;
+				py += deltay;
 			}
 			else if(actionName.equals(ACTION_BACKWARDS)){
-				if(direction == 0){
-					py -= 0.02;
-					((MutableState)s).set(ATT_X, px);
-				}
-				else if(direction == 1){
-					px -= 0.02;
-					((MutableState)s).set(ATT_X, px);
-				}
-				else if(direction == 2){
-					py += 0.02;
-					((MutableState)s).set(ATT_Y, py);
-				}
-				else{
-					px += 0.02;
-					((MutableState)s).set(ATT_Y, py);
-				}
+				double deltax = Math.cos(direction) * speed;
+				double deltay = Math.sin(direction) * speed;
+				px -= deltax;
+				py -= deltay;
 			}
 			return s;
 		}
 
 		public List<StateTransitionProb> stateTransitions(State s, Action a) {
-			return FullStateModel.Helper.deterministicTransition(this, s, (burlap.mdp.core.action.Action) a);
+			return FullStateModel.Helper.deterministicTransition(this, s, a);
 		}
 		
 	}
