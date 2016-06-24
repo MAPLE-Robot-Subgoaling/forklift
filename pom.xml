@@ -12,11 +12,10 @@
   <url>http://maple.cs.umbc.edu/</url>
 
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
+  	<dependency>
+  		<groupId>edu.brown.cs.burlap</groupId>
+  		<artifactId>burlap</artifactId>
+  		<version>3.0.0</version>
+	</dependency>
   </dependencies>
 </project>
