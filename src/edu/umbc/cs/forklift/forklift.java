@@ -22,16 +22,12 @@ public class forklift implements DomainGenerator{
 	public static final String ATT_D = "d";
 	public static final String ATT_L = "l";
 	public static final String ATT_W = "w";
-	
-	public static final String ACTION_FORWARD = "forward";
-	public static final String ACTION_BACKWARDS = "backward";
-	public static final String ROTATE_CLOCKWISE = "clockwise";
-	public static final String ROTATE_COUNTERCLOCKWISE = "counterclockwise";
-	
-	public static final int NORTH = 0;
-	public static final int EAST = 1;
-	public static final int SOUTH = 2;
-	public static final int WEST = 3;
+	public static final String PREFIX_MOVE = "M_";
+	public static final String PREFIX_ROTATE = "R_";
+	public static final String MOVE_FORWARD = PREFIX_MOVE+"forward";
+	public static final String MOVE_BACKWARD = PREFIX_MOVE+"backward";
+	public static final String ROTATE_CLOCKWISE = PREFIX_ROTATE+"clockwise";
+	public static final String ROTATE_COUNTERCLOCKWISE = PREFIX_ROTATE+"counterclockwise";
 	
 	public final double xBound = 20;
 	public final double yBound = 20;
@@ -93,36 +89,34 @@ public class forklift implements DomainGenerator{
 		}
 
 		public State move(State s, Action a) {
-			double px = (Double)s.get(ATT_X);
-			double py = (Double)s.get(ATT_Y);
+
 			double direction = (Double)s.get(ATT_D);
 			
 			String actionName = a.actionName();
-			if(actionName.equals(ROTATE_COUNTERCLOCKWISE)){
-				direction -= rotationalSpeed;
-				if(direction < 0){
-					direction += 360;
-				}
-				((MutableState)s).set(ATT_D, direction);
-			}
-			else if(actionName.equals(ROTATE_CLOCKWISE)){
-				direction += rotationalSpeed;
+			//check if action is a rotate or a move
+			if(actionName.startsWith(PREFIX_ROTATE)){
+				
+				if(actionName.equals(ROTATE_CLOCKWISE))
+					direction += rotationalSpeed;
+				else if(actionName.equals(ROTATE_COUNTERCLOCKWISE))
+					direction -= rotationalSpeed;
+			
 				direction %= 360;
 				((MutableState)s).set(ATT_D, direction);
-			}
-			else if(actionName.equals(ACTION_FORWARD)){
+				
+			}else if(actionName.startsWith(PREFIX_MOVE)){
+				double px = (Double)s.get(ATT_X);
+				double py = (Double)s.get(ATT_Y);
 				double deltax = Math.cos((direction/360)*2*Math.PI) * speed;
 				double deltay = Math.sin((direction/360)*2*Math.PI) * speed;
-				px += deltax;
-				py += deltay;
-				((MutableState)s).set(ATT_X, px);
-				((MutableState)s).set(ATT_Y, py);
-			}
-			else if(actionName.equals(ACTION_BACKWARDS)){
-				double deltax = Math.cos((direction/360)*2*Math.PI) * speed;
-				double deltay = Math.sin((direction/360)*2*Math.PI) * speed;
-				px -= deltax;
-				py -= deltay;
+				if(actionName.equals(MOVE_FORWARD)){
+					px += deltax;
+					py += deltay;
+				}
+				else if(actionName.equals(MOVE_BACKWARD)){
+					px -= deltax;
+					py -= deltay;
+				}
 				((MutableState)s).set(ATT_X, px);
 				((MutableState)s).set(ATT_Y, py);
 			}
