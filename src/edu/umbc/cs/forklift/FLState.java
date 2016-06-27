@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import burlap.mdp.core.state.MutableState;
-import burlap.mdp.core.state.State;
 import burlap.mdp.core.state.StateUtilities;
 
 import static edu.umbc.cs.forklift.forklift.ATT_X;
@@ -35,97 +34,65 @@ public class FLState implements MutableState{
 		this.xWidth = xWidth;
 	}
 	
-	public State copy() {
+	public FLState copy() {
 		return new FLState(x, y, direction, yLength, xWidth);
 	}
 
 	public Object get(Object variableKey) {
-		if(variableKey instanceof String){
-			if(variableKey.equals(ATT_X)){
+		
+		if(variableKey instanceof String)
+			if(variableKey.equals(ATT_X))
 				return x;
-			}
-			else if(variableKey.equals(ATT_Y)){
+			else if(variableKey.equals(ATT_Y))
 				return y;
-			}
 			else if(variableKey.equals(ATT_D))
-			{
 				return direction;
-			}
 			else if(variableKey.equals(ATT_W))
-			{
 				return xWidth;
-			}
 			else if(variableKey.equals(ATT_L))
-			{
 				return yLength;
-			}
-			else{
+			else
 				throw new RuntimeException("Unknown key " + variableKey);
-			}
-		}
-		else if(variableKey instanceof Integer){
-			if((Integer)variableKey == 0){
-				return x;
-			}
-			else if((Integer)variableKey == 1){
-				return y;
-			}
-			else if((Integer)variableKey == 2){
-				return direction;
-			}
-			else if((Integer)variableKey == 3)
-			{
-				return xWidth;
-			}
-			else if((Integer)variableKey == 4)
-			{
-				return yLength;
-			}
-			else{
-				throw new RuntimeException("Unknown key " + variableKey);
-			}
-		}
-
+		
+		else if(variableKey instanceof Integer)
+				switch((Integer)variableKey){
+					case 0:	return x;
+					case 1:	return y;
+					case 2: return direction;
+					case 3: return xWidth;
+					case 4: return yLength;
+					default: throw new RuntimeException("Unknown key " + variableKey);
+				}
+		//if key is not string or integer
 		throw new RuntimeException("Unknown key " + variableKey);
 	}
 
 	public MutableState set(Object variableKey, Object value) {
+		
 		if(variableKey instanceof String){
-			if(variableKey.equals(ATT_X)){
+			
+			if(variableKey.equals(ATT_X))
 				this.x = StateUtilities.stringOrNumber(value).doubleValue();
-				return this;
-			}
-			else if(variableKey.equals(ATT_Y)){
+			else if(variableKey.equals(ATT_Y))
 				this.y = StateUtilities.stringOrNumber(value).doubleValue();
-				return this;
-			}
 			else if(variableKey.equals(ATT_D))
-			{
 				this.direction = StateUtilities.stringOrNumber(value).doubleValue();
-				return this;
-			}
-			else{
+			else
 				throw new RuntimeException("Unknown key " + variableKey);
+			
+			return this;
+			
+		}else if(variableKey instanceof Integer){
+			
+			switch((Integer)variableKey){
+				case 0: this.x = StateUtilities.stringOrNumber(value).doubleValue();break;
+				case 1: this.y = StateUtilities.stringOrNumber(value).doubleValue();break;
+				case 2: this.direction = StateUtilities.stringOrNumber(value).doubleValue();break;
+				default:throw new RuntimeException("Unknown key " + variableKey);
 			}
+			
+			return this;
 		}
-		else if(variableKey instanceof Integer){
-			if((Integer)variableKey == 0){
-				this.x = StateUtilities.stringOrNumber(value).doubleValue();
-				return this;
-			}
-			else if((Integer)variableKey == 1){
-				this.y = StateUtilities.stringOrNumber(value).doubleValue();
-				return this;
-			}
-			else if((Integer)variableKey == 2){
-				this.direction = StateUtilities.stringOrNumber(value).intValue();
-				return this;
-			}
-			else{
-				throw new RuntimeException("Unknown key " + variableKey);
-			}
-		}
-
 		throw new RuntimeException("Unknown key " + variableKey);
 	}
 
