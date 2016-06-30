@@ -1,10 +1,12 @@
 package edu.umbc.cs.forklift;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.action.Action;
+import burlap.mdp.core.action.ActionType;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.TerminalFunction;
@@ -12,7 +14,9 @@ import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.common.GoalBasedRF;
+import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.model.RewardFunction;
+import burlap.mdp.singleagent.model.SampleModel;
 import burlap.mdp.singleagent.model.statemodel.FullStateModel;
 
 public class forklift implements DomainGenerator{
@@ -69,7 +73,71 @@ public class forklift implements DomainGenerator{
 		tf = new FLTF(Boxes, goalArea);
 		rf = new GoalBasedRF(new FLRF(Boxes, goalArea), 1, 0);
 		
-		return null;
+		List<Action> MOVE = new ArrayList<Action>();
+		MOVE.add(new FLAction(MOVE_FORWARD));
+		MOVE.add(new FLAction(MOVE_BACKWARD));
+		
+		List<Action> ROTATE = new ArrayList<Action>();;
+		ROTATE.add(new FLAction(ROTATE_COUNTERCLOCKWISE));
+		ROTATE.add(new FLAction(ROTATE_CLOCKWISE));
+		
+		domain.setModel((SampleModel) fmodel);
+		
+		domain.addActionTypes(new FLActionType(PREFIX_MOVE, MOVE), 
+				new FLActionType(PREFIX_ROTATE, ROTATE));
+		
+		return domain;
+	}
+	
+	public class FLAction implements Action
+	{
+		private String name;
+
+		public FLAction(String n)
+		{
+			name = n;
+		}
+		
+		public String actionName() {
+			return name;
+		}
+
+		public Action copy() {
+			return this;
+		}
+		
+	}
+	
+	public class FLActionType implements ActionType
+	{
+		String name;
+		List<Action> actions;
+
+		public FLActionType(String name, List<Action> actions)
+		{
+			this.name = name;
+			this.actions = actions;
+		}
+		
+		public List<Action> allApplicableActions(State s) {
+			return actions;
+		}
+
+		public Action associatedAction(String s) {
+			for(Action a: actions)
+			{
+				if(s.equals(a.actionName())){
+					return a;
+				}
+			}
+			
+			return null;
+		}
+
+		public String typeName() {
+			return name;
+		}
+		
 	}
 	
 	public static class FLModel implements FullStateModel
@@ -100,7 +168,8 @@ public class forklift implements DomainGenerator{
 					direction += rotationalSpeed;
 				else if(actionName.equals(ROTATE_COUNTERCLOCKWISE))
 					direction -= rotationalSpeed;
-			
+				if(direction < 0)
+					direction += 360;
 				direction %= 360;
 				((MutableState)s).set(ATT_D, direction);
 				
