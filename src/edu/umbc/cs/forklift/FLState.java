@@ -3,6 +3,9 @@ package edu.umbc.cs.forklift;
 import java.util.Arrays;
 import java.util.List;
 
+import burlap.mdp.core.oo.state.MutableOOState;
+import burlap.mdp.core.oo.state.OOStateUtilities;
+import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.StateUtilities;
 
@@ -11,8 +14,8 @@ import static edu.umbc.cs.forklift.forklift.ATT_Y;
 import static edu.umbc.cs.forklift.forklift.ATT_D;
 import static edu.umbc.cs.forklift.forklift.ATT_W;
 import static edu.umbc.cs.forklift.forklift.ATT_L;
-
-public class FLState implements MutableState{
+//TODO make all the attributes of a forklift agent play with an agent object, not FLState
+public class FLState implements MutableOOState{
 
 	private double direction;
 	private double x;
@@ -95,13 +98,49 @@ public class FLState implements MutableState{
 		}
 		throw new RuntimeException("Unknown key " + variableKey);
 	}
-
+	
 	public List<Object> variableKeys() {
-		return keys;
+		return OOStateUtilities.flatStateKeys(this);
 	}
 	
 	public String toString() {
-		return StateUtilities.stateToString(this);
+		return OOStateUtilities.ooStateToString(this);
+	}
+
+	//TODO when FLState is more object oriented, fill these out
+	public int numObjects() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public ObjectInstance object(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<ObjectInstance> objects() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<ObjectInstance> objectsOfClass(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public MutableOOState addObject(ObjectInstance arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public MutableOOState removeObject(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public MutableOOState renameObject(String arg0, String arg1) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 
