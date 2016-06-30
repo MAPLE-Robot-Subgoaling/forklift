@@ -33,8 +33,8 @@ public class forklift implements DomainGenerator{
 	public static final String ROTATE_CLOCKWISE = PREFIX_ROTATE+"clockwise";
 	public static final String ROTATE_COUNTERCLOCKWISE = PREFIX_ROTATE+"counterclockwise";
 	
-	public final double xBound = 20;
-	public final double yBound = 20;
+	public static final double xBound = 20;
+	public static final double yBound = 20;
 	
 	protected RewardFunction rf;
 	protected TerminalFunction tf;
@@ -43,8 +43,8 @@ public class forklift implements DomainGenerator{
 	double rotVel = 5;
 	
 	public List<Double> goalArea; //xmin,xmax,ymin,ymax
-	public ArrayList<FLState> Walls = new ArrayList<FLState>();
-	public ArrayList<FLState> Boxes = new ArrayList<FLState>();
+	public static ArrayList<FLState> Walls = new ArrayList<FLState>();
+	public static ArrayList<FLState> Boxes = new ArrayList<FLState>();
 	
 	public static int captured = 0; 
 	
