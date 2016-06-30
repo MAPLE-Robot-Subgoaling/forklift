@@ -18,6 +18,7 @@ import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.model.SampleModel;
 import burlap.mdp.singleagent.model.statemodel.FullStateModel;
+import edu.umbc.cs.forklift.state.FLState;
 
 public class forklift implements DomainGenerator{
 
