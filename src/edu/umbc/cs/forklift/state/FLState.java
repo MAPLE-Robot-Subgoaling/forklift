@@ -11,22 +11,20 @@ import burlap.mdp.core.oo.state.exceptions.UnknownClassException;
 import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.StateUtilities;
 
-import static edu.umbc.cs.forklift.forklift.ATT_X;
-import static edu.umbc.cs.forklift.forklift.ATT_Y;
-import static edu.umbc.cs.forklift.forklift.ATT_D;
-import static edu.umbc.cs.forklift.forklift.ATT_W;
-import static edu.umbc.cs.forklift.forklift.ATT_L;
-import static edu.umbc.cs.forklift.forklift.ATT_N;
+//import static edu.umbc.cs.forklift.forklift.ATT_X;
+//import static edu.umbc.cs.forklift.forklift.ATT_Y;
+//import static edu.umbc.cs.forklift.forklift.ATT_D;
+//import static edu.umbc.cs.forklift.forklift.ATT_W;
+//import static edu.umbc.cs.forklift.forklift.ATT_L;
+//import static edu.umbc.cs.forklift.forklift.ATT_N;
+import static edu.umbc.cs.forklift.forklift.*;
 //TODO make all the attributes of a forklift agent play with an agent object, not FLState
 public class FLState implements MutableOOState{
 	
 	FLAgent agent;
 	List <FLWall> walls;
-	
-	private static final String CLA_A = "agent";
-	private static final String CLA_W = "wall";
-	private static final String CLA_B = "block";
-	private static final List<Object> keys = Arrays.<Object>asList(CLA_A,CLA_W,CLA_B);
+
+	private static final List<Object> keys = Arrays.<Object>asList(CLASS_AGENT,CLASS_WALL,CLASS_BOX);
 	
 	public FLState(){
 	}
@@ -122,17 +120,17 @@ public class FLState implements MutableOOState{
 	}
 
 	public Object get(Object key) {
-		if(key.equals(CLA_A))
+		if(key.equals(CLASS_AGENT))
 			return agent;
-		else if(key.equals(CLA_W))
+		else if(key.equals(CLASS_WALL))
 			return walls;
 		return null;
 	}
 
 	public MutableState set(Object key, Object value) {
-		if(key.equals(CLA_A))
+		if(key.equals(CLASS_AGENT))
 			agent = (FLAgent) value;
-		else if(key.equals(CLA_W))
+		else if(key.equals(CLASS_WALL))
 			walls = (List<FLWall>) value;
 		return this;
 	}

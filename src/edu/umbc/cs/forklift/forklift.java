@@ -42,7 +42,8 @@ public class forklift implements DomainGenerator{
 	public static final String ROTATE_CLOCKWISE = PREFIX_ROTATE+"clockwise";
 	public static final String ROTATE_COUNTERCLOCKWISE = PREFIX_ROTATE+"counterclockwise";
 	public static final String CLASS_AGENT = "agent";
-	public static final String WALL = "wall";
+	public static final String CLASS_WALL = "wall";
+	public static final String CLASS_BOX = "box";
 	
 	public static final double xBound = 20;
 	public static final double yBound = 20;
@@ -100,7 +101,7 @@ public class forklift implements DomainGenerator{
 				new UniversalActionType(ROTATE_COUNTERCLOCKWISE));
 		
 		domain.addStateClass(CLASS_AGENT, FLAgent.class)
-		.addStateClass(WALL, FLWall.class);
+		.addStateClass(CLASS_WALL, FLWall.class);
 		
 		return domain;
 	}
