@@ -9,14 +9,7 @@ import burlap.mdp.core.oo.state.OOStateUtilities;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.oo.state.exceptions.UnknownClassException;
 import burlap.mdp.core.state.MutableState;
-import burlap.mdp.core.state.StateUtilities;
 
-import static edu.umbc.cs.forklift.forklift.ATT_X;
-import static edu.umbc.cs.forklift.forklift.ATT_Y;
-import static edu.umbc.cs.forklift.forklift.ATT_D;
-import static edu.umbc.cs.forklift.forklift.ATT_W;
-import static edu.umbc.cs.forklift.forklift.ATT_L;
-import static edu.umbc.cs.forklift.forklift.ATT_N;
 //TODO make all the attributes of a forklift agent play with an agent object, not FLState
 public class FLState implements MutableOOState{
 	

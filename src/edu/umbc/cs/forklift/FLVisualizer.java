@@ -13,10 +13,6 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import burlap.domain.singleagent.lunarlander.LunarLanderDomain;
-import burlap.domain.singleagent.lunarlander.LLVisualizer.AgentPainter;
-import burlap.domain.singleagent.lunarlander.LLVisualizer.ObstaclePainter;
-import burlap.domain.singleagent.lunarlander.LLVisualizer.PadPainter;
 import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.visualizer.OOStatePainter;
