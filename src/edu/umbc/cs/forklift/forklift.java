@@ -11,6 +11,7 @@ import burlap.mdp.core.action.Action;
 import burlap.mdp.core.action.ActionType;
 import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.core.oo.state.MutableOOState;
+import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.TerminalFunction;
@@ -175,6 +176,8 @@ public class forklift implements DomainGenerator{
 			double direction = (Double)agent.get(ATT_D);
 			double px = (Double)agent.get(ATT_X);
 			double py = (Double)agent.get(ATT_Y);
+			double w = (Double)agent.get(ATT_W);
+			double l = (Double)agent.get(ATT_L);
 			
 			String actionName = a.actionName();
 			//check if action is a rotate or a move
@@ -187,7 +190,7 @@ public class forklift implements DomainGenerator{
 				direction %= 360;
 				if(direction < 0)
 					direction += 360;
-				FLAgent newAgent = new FLAgent(px,py,direction,5,5,"agent");
+				FLAgent newAgent = new FLAgent(px,py,direction,w,l,"agent");
 				((MutableOOState) s).set(CLASS_AGENT, newAgent);
 				
 			}else if(actionName.startsWith(PREFIX_MOVE)){
@@ -201,8 +204,10 @@ public class forklift implements DomainGenerator{
 					px -= deltax;
 					py -= deltay;
 				}
-				FLAgent newAgent = new FLAgent(px,py,direction,5,5,"agent");
-				((MutableOOState) s).set(CLASS_AGENT, newAgent);
+				if(collisionCheck(s, px, py, w, l) == false){
+					FLAgent newAgent = new FLAgent(px,py,direction,w,l,"agent");
+					((MutableOOState) s).set(CLASS_AGENT, newAgent);
+				}
 			}
 			return s;
 		}
@@ -213,6 +218,34 @@ public class forklift implements DomainGenerator{
 		}
 
 		public boolean terminal(State s) {
+			return false;
+		}
+		
+		public boolean collisionCheck(State s, double x, double y, double w, double l)
+		{
+			List<ObjectInstance> walls =  ((MutableOOState) s).objectsOfClass(CLASS_WALL);
+			for(ObjectInstance wall: walls)
+			{
+				if((x > (Double)wall.get(ATT_X) && 
+					x < (Double)wall.get(ATT_X) + (Double)wall.get(ATT_W) &&
+					y > (Double)wall.get(ATT_Y) &&
+					y < (Double)wall.get(ATT_Y) + (Double)wall.get(ATT_L))||
+					(x > (Double)wall.get(ATT_X) && 
+					x < (Double)wall.get(ATT_X) + (Double)wall.get(ATT_W) &&
+					y + l > (Double)wall.get(ATT_Y) &&
+					y + l < (Double)wall.get(ATT_Y) + (Double)wall.get(ATT_L))||
+					(x + w > (Double)wall.get(ATT_X) && 
+					x + w< (Double)wall.get(ATT_X) + (Double)wall.get(ATT_W) &&
+					y > (Double)wall.get(ATT_Y) &&
+					y < (Double)wall.get(ATT_Y) + (Double)wall.get(ATT_L))||
+					(x + w > (Double)wall.get(ATT_X) && 
+					x + w < (Double)wall.get(ATT_X) + (Double)wall.get(ATT_W) &&
+					y + l > (Double)wall.get(ATT_Y) &&
+					y + l < (Double)wall.get(ATT_Y) + (Double)wall.get(ATT_L))
+						){
+					return true;
+				}
+			}
 			return false;
 		}
 		
