@@ -1,5 +1,6 @@
 package edu.umbc.cs.forklift.state;
 
+import static burlap.domain.singleagent.lunarlander.LunarLanderDomain.CLASS_AGENT;
 import static edu.umbc.cs.forklift.forklift.ATT_D;
 import static edu.umbc.cs.forklift.forklift.ATT_L;
 import static edu.umbc.cs.forklift.forklift.ATT_N;
@@ -13,34 +14,34 @@ import java.util.List;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
 
-public class FLAgent implements ObjectInstance {
+import static edu.umbc.cs.forklift.forklift.ATT_X;
+import static edu.umbc.cs.forklift.forklift.ATT_Y;
+import static edu.umbc.cs.forklift.forklift.ATT_D;
+import static edu.umbc.cs.forklift.forklift.ATT_W;
+import static edu.umbc.cs.forklift.forklift.ATT_L;
+import static edu.umbc.cs.forklift.forklift.ATT_N;
 
-	private double direction;
+public class FLWall implements ObjectInstance{
+
 	private double x;
 	private double y;
 	private double yLength;
 	private double xWidth;
 	private String name;
 	
-	private static final List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_D, ATT_W, ATT_L, ATT_N);
+	private static final List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_W, ATT_L, ATT_N);
 	
-	public FLAgent()
-	{
-		
-	}
-	
-	public FLAgent(double x, double y, double direction, double yLength, double xWidth, String name)
+	public FLWall(double x, double y, double yLength, double xWidth, String name)
 	{
 		this.x = x;
 		this.y = y;
-		this.direction = direction;
 		this.yLength = yLength;
 		this.xWidth = xWidth;
 		this.name = name;
 	}
-
-	public FLAgent copy() {
-		return new FLAgent(x, y, direction, yLength, xWidth, name);
+	
+	public List<Object> variableKeys() {
+		return keys;
 	}
 
 	public Object get(Object variableKey) {
@@ -49,8 +50,6 @@ public class FLAgent implements ObjectInstance {
 				return x;
 			else if(variableKey.equals(ATT_Y))
 				return y;
-			else if(variableKey.equals(ATT_D))
-				return direction;
 			else if(variableKey.equals(ATT_W))
 				return xWidth;
 			else if(variableKey.equals(ATT_L))
@@ -64,33 +63,32 @@ public class FLAgent implements ObjectInstance {
 				switch((Integer)variableKey){
 					case 0:	return x;
 					case 1:	return y;
-					case 2: return direction;
-					case 3: return xWidth;
-					case 4: return yLength;
-					case 5: return name;
+					case 2: return xWidth;
+					case 3: return yLength;
+					case 4: return name;
 					default: throw new RuntimeException("Unknown key " + variableKey);
 				}
 		//if key is not string or integer
 		throw new RuntimeException("Unknown key " + variableKey);
 	}
 
-	public List<Object> variableKeys() {
-		return keys;
+	public FLWall copy() {
+		return new FLWall(x,y,yLength,xWidth,name);
 	}
 
 	public String className() {
-		return "agent";
-	}
-
-	public ObjectInstance copyWithName(String objectName) {
-		if(!objectName.equals("agent"))
-			throw new RuntimeException("Agent must be of class FLAgent");
-
-		return copy();
+		return "wall";
 	}
 
 	public String name() {
-		return "agent";
+		return "wall";
+	}
+
+	public ObjectInstance copyWithName(String objectName) {
+		if(!objectName.equals("wall"))
+			throw new RuntimeException("Wall must be class wall");
+
+		return copy();
 	}
 
 }

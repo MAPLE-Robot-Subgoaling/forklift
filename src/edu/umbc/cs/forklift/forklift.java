@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import burlap.domain.singleagent.lunarlander.state.LLAgent;
+import burlap.domain.singleagent.lunarlander.state.LLBlock;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.action.ActionType;
+import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.TerminalFunction;
@@ -14,11 +17,15 @@ import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.common.GoalBasedRF;
+import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.model.SampleModel;
 import burlap.mdp.singleagent.model.statemodel.FullStateModel;
+import burlap.mdp.singleagent.oo.OOSADomain;
+import edu.umbc.cs.forklift.state.FLAgent;
 import edu.umbc.cs.forklift.state.FLState;
+import edu.umbc.cs.forklift.state.FLWall;
 
 public class forklift implements DomainGenerator{
 
@@ -27,12 +34,15 @@ public class forklift implements DomainGenerator{
 	public static final String ATT_D = "d";
 	public static final String ATT_L = "l";
 	public static final String ATT_W = "w";
+	public static final String ATT_N = "n";
 	public static final String PREFIX_MOVE = "M_";
 	public static final String PREFIX_ROTATE = "R_";
 	public static final String MOVE_FORWARD = PREFIX_MOVE+"forward";
 	public static final String MOVE_BACKWARD = PREFIX_MOVE+"backward";
 	public static final String ROTATE_CLOCKWISE = PREFIX_ROTATE+"clockwise";
 	public static final String ROTATE_COUNTERCLOCKWISE = PREFIX_ROTATE+"counterclockwise";
+	public static final String CLASS_AGENT = "agent";
+	public static final String WALL = "wall";
 	
 	public static final double xBound = 20;
 	public static final double yBound = 20;
@@ -44,10 +54,18 @@ public class forklift implements DomainGenerator{
 	double rotVel = 5;
 	
 	public List<Double> goalArea; //xmin,xmax,ymin,ymax
-	public static ArrayList<FLState> Walls = new ArrayList<FLState>();
+	public static ArrayList<FLWall> Walls = new ArrayList<FLWall>();
 	public static ArrayList<FLState> Boxes = new ArrayList<FLState>();
 	
 	public static int captured = 0; 
+	
+	public forklift()
+	{
+		for(int i = 0; i < 10; i++)
+		{
+			Walls.add(new FLWall(i, 10 , 1, 1, "wall"+i));
+		}
+	}
 	
 	public TerminalFunction getTf() {
 		return tf;
@@ -65,27 +83,24 @@ public class forklift implements DomainGenerator{
 		this.rf = rf;
 	}
 	
-	public SADomain generateDomain() {
+	public OOSADomain generateDomain() {
 		
-		SADomain domain = new SADomain();
+		OOSADomain domain = new OOSADomain();
 		
 		FLModel fmodel = new FLModel(velocity, rotVel);
 		
 		tf = new FLTF(Boxes, goalArea);
 		rf = new GoalBasedRF(new FLRF(Boxes, goalArea), 1, 0);
 		
-		List<Action> MOVE = new ArrayList<Action>();
-		MOVE.add(new FLAction(MOVE_FORWARD));
-		MOVE.add(new FLAction(MOVE_BACKWARD));
+		domain.setModel(fmodel);
 		
-		List<Action> ROTATE = new ArrayList<Action>();;
-		ROTATE.add(new FLAction(ROTATE_COUNTERCLOCKWISE));
-		ROTATE.add(new FLAction(ROTATE_CLOCKWISE));
+		domain.addActionTypes(new UniversalActionType(MOVE_FORWARD), 
+				new UniversalActionType(MOVE_BACKWARD),
+				new UniversalActionType(ROTATE_CLOCKWISE),
+				new UniversalActionType(ROTATE_COUNTERCLOCKWISE));
 		
-		domain.setModel((SampleModel) fmodel);
-		
-		domain.addActionTypes(new FLActionType(PREFIX_MOVE, MOVE), 
-				new FLActionType(PREFIX_ROTATE, ROTATE));
+		domain.addStateClass(CLASS_AGENT, FLAgent.class)
+		.addStateClass(WALL, FLWall.class);
 		
 		return domain;
 	}
@@ -141,7 +156,7 @@ public class forklift implements DomainGenerator{
 		
 	}
 	
-	public static class FLModel implements FullStateModel
+	public static class FLModel implements SampleModel
 	{
 		double speed;
 		double rotationalSpeed;
@@ -150,11 +165,6 @@ public class forklift implements DomainGenerator{
 		{
 			this.speed = speed;
 			this.rotationalSpeed = rotationalSpeed;
-		}
-
-		public State sample(State s, Action a) {
-			s = s.copy();
-			return move(s, a);
 		}
 
 		public State move(State s, Action a) {
@@ -193,8 +203,13 @@ public class forklift implements DomainGenerator{
 			return s;
 		}
 
-		public List<StateTransitionProb> stateTransitions(State s, Action a) {
-			return FullStateModel.Helper.deterministicTransition(this, s, a);
+		public EnvironmentOutcome sample(State s, Action a) {
+			s = s.copy();
+			return new EnvironmentOutcome(s, a, move(s, a), -1, false);
+		}
+
+		public boolean terminal(State s) {
+			return false;
 		}
 		
 	}
