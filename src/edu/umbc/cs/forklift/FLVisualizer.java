@@ -127,19 +127,19 @@ public class FLVisualizer {
 					
 			if(direction > 315 || direction < 45)
 			{
-				dir = "north";
+				dir = "east";
 			}
 			else if(direction > 225)
 			{
-				dir = "west";
+				dir = "south";
 			}
 			else if(direction > 135)
 			{
-				dir = "south";
+				dir = "west";
 			}
 			else
 			{
-				dir = "east";
+				dir = "north";
 			}
 					
 			BufferedImage img = this.dirToImage.get(dir);

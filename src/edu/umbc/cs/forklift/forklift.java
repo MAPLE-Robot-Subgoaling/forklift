@@ -10,6 +10,7 @@ import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.action.ActionType;
 import burlap.mdp.core.action.UniversalActionType;
+import burlap.mdp.core.oo.state.MutableOOState;
 import burlap.mdp.core.Domain;
 import burlap.mdp.core.StateTransitionProb;
 import burlap.mdp.core.TerminalFunction;
@@ -169,23 +170,24 @@ public class forklift implements DomainGenerator{
 
 			FLAgent agent = (FLAgent) s.get(CLASS_AGENT);
 			double direction = (Double)agent.get(ATT_D);
+			double px = (Double)agent.get(ATT_X);
+			double py = (Double)agent.get(ATT_Y);
 			
 			String actionName = a.actionName();
 			//check if action is a rotate or a move
 			if(actionName.startsWith(PREFIX_ROTATE)){
 				
 				if(actionName.equals(ROTATE_CLOCKWISE))
-					direction += rotationalSpeed;
-				else if(actionName.equals(ROTATE_COUNTERCLOCKWISE))
 					direction -= rotationalSpeed;
+				else if(actionName.equals(ROTATE_COUNTERCLOCKWISE))
+					direction += rotationalSpeed;
 				if(direction < 0)
 					direction += 360;
 				direction %= 360;
-				agent.set(ATT_D, direction);
+				FLAgent newAgent = new FLAgent(px,py,direction,5,5,"agent");
+				((MutableOOState) s).set(CLASS_AGENT, newAgent);
 				
 			}else if(actionName.startsWith(PREFIX_MOVE)){
-				double px = (Double)agent.get(ATT_X);
-				double py = (Double)agent.get(ATT_Y);
 				double deltax = Math.cos((direction/360)*2*Math.PI) * speed;
 				double deltay = Math.sin((direction/360)*2*Math.PI) * speed;
 				if(actionName.equals(MOVE_FORWARD)){
@@ -196,8 +198,8 @@ public class forklift implements DomainGenerator{
 					px -= deltax;
 					py -= deltay;
 				}
-				agent.set(ATT_X, px);
-				agent.set(ATT_Y, py);
+				FLAgent newAgent = new FLAgent(px,py,direction,5,5,"agent");
+				((MutableOOState) s).set(CLASS_AGENT, newAgent);
 			}
 			return s;
 		}
