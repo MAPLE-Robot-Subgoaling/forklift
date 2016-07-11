@@ -10,16 +10,8 @@ import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.oo.state.exceptions.UnknownClassException;
 import burlap.mdp.core.state.MutableState;
 
-<<<<<<< HEAD
-=======
-//import static edu.umbc.cs.forklift.forklift.ATT_X;
-//import static edu.umbc.cs.forklift.forklift.ATT_Y;
-//import static edu.umbc.cs.forklift.forklift.ATT_D;
-//import static edu.umbc.cs.forklift.forklift.ATT_W;
-//import static edu.umbc.cs.forklift.forklift.ATT_L;
-//import static edu.umbc.cs.forklift.forklift.ATT_N;
+
 import static edu.umbc.cs.forklift.forklift.*;
->>>>>>> 9fd304b218e3d2e67ba3d29efb4fc742e3e3e99b
 //TODO make all the attributes of a forklift agent play with an agent object, not FLState
 public class FLState implements MutableOOState{
 	
@@ -79,7 +71,7 @@ public class FLState implements MutableOOState{
 
 	public List<ObjectInstance> objectsOfClass(String s) {
 		List<ObjectInstance> ooc = new ArrayList<ObjectInstance>();;
-		if(agent.className() == s){
+		if(agent.className().equals(s)){
 			ooc.add(agent);
 		}
 		else if(walls.get(0).className().equals(s))

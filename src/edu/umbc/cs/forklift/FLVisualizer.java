@@ -41,7 +41,7 @@ public class FLVisualizer {
 		
 		System.out.println("entered");
 		
-		ooStatePainter.addObjectClassPainter("agent", new ForkliftPainter("data/resources/robotImages/"));
+		ooStatePainter.addObjectClassPainter("agent", new ForkliftPainter("data/resources/robotImagesForklift/"));
 		ooStatePainter.addObjectClassPainter("wall", new WallPainter());
 
 		System.out.println("entered");
@@ -85,7 +85,7 @@ public class FLVisualizer {
 		}
 	}
 		
-	public static class ForkliftPainter implements ObjectPainter
+	public static class ForkliftPainter implements ObjectPainter, ImageObserver
 	{
 		
 		private String imgPath;
@@ -143,7 +143,7 @@ public class FLVisualizer {
 			}
 					
 			BufferedImage img = this.dirToImage.get(dir);
-			g2.drawImage(img, (int)rx, (int)ry, (int)width, (int)height, (ImageObserver) this);
+			g2.drawImage(img, (int)rx, (int)ry, (int)width, (int)height, this);
 			
 		}
 		

@@ -62,10 +62,7 @@ public class forklift implements DomainGenerator{
 	
 	public forklift()
 	{
-		for(int i = 0; i < 10; i++)
-		{
-			Walls.add(new FLWall(i, 10 , 1, 1, "wall"+i));
-		}
+		
 	}
 	
 	public TerminalFunction getTf() {
@@ -170,7 +167,8 @@ public class forklift implements DomainGenerator{
 
 		public State move(State s, Action a) {
 
-			double direction = (Double)s.get(ATT_D);
+			FLAgent agent = (FLAgent) s.get(CLASS_AGENT);
+			double direction = (Double)agent.get(ATT_D);
 			
 			String actionName = a.actionName();
 			//check if action is a rotate or a move
@@ -183,7 +181,7 @@ public class forklift implements DomainGenerator{
 				if(direction < 0)
 					direction += 360;
 				direction %= 360;
-				((MutableState)s).set(ATT_D, direction);
+				agent.set(ATT_D, direction);
 				
 			}else if(actionName.startsWith(PREFIX_MOVE)){
 				double px = (Double)s.get(ATT_X);
@@ -198,8 +196,8 @@ public class forklift implements DomainGenerator{
 					px -= deltax;
 					py -= deltay;
 				}
-				((MutableState)s).set(ATT_X, px);
-				((MutableState)s).set(ATT_Y, py);
+				agent.set(ATT_X, px);
+				agent.set(ATT_Y, py);
 			}
 			return s;
 		}

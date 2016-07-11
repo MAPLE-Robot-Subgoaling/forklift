@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import burlap.mdp.core.oo.state.ObjectInstance;
-import burlap.mdp.core.state.State;
 
 public class FLAgent implements ObjectInstance {
 
@@ -43,6 +42,38 @@ public class FLAgent implements ObjectInstance {
 		return new FLAgent(x, y, direction, yLength, xWidth, name);
 	}
 
+	public void set(Object variableKey, Object v)
+	{
+		if(variableKey instanceof String)
+			if(variableKey.equals(ATT_X))
+				x = (Double) v;
+			else if(variableKey.equals(ATT_Y))
+				y = (Double) v;
+			else if(variableKey.equals(ATT_D))
+				direction = (Double) v;
+			else if(variableKey.equals(ATT_W))
+				xWidth = (Double) v;
+			else if(variableKey.equals(ATT_L))
+				yLength = (Double) v;
+			else if(variableKey.equals(ATT_N))
+				name = (String) v;
+			else
+				throw new RuntimeException("Unknown key " + variableKey);
+		
+		else if(variableKey instanceof Integer)
+				switch((Integer)variableKey){
+					case 0:	x = (Double) v;;
+					case 1:	y = (Double) v;
+					case 2: direction = (Double) v;
+					case 3: xWidth = (Double) v;
+					case 4: yLength = (Double) v;
+					case 5: name = (String) v;
+					default: throw new RuntimeException("Unknown key " + variableKey);
+				}
+		//if key is not string or integer
+		throw new RuntimeException("Unknown key " + variableKey);
+	}
+	
 	public Object get(Object variableKey) {
 		if(variableKey instanceof String)
 			if(variableKey.equals(ATT_X))
