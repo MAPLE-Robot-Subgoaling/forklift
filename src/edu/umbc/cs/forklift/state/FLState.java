@@ -9,21 +9,22 @@ import burlap.mdp.core.oo.state.OOStateUtilities;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.oo.state.exceptions.UnknownClassException;
 import burlap.mdp.core.state.MutableState;
-
+import edu.umbc.cs.forklift.state.FLBlock.FLWall;
+import edu.umbc.cs.forklift.state.FLBlock;
 
 import static edu.umbc.cs.forklift.forklift.*;
 
 public class FLState implements MutableOOState{
 	
 	FLAgent agent;
-	List <FLWall> walls;
+	List <FLBlock> walls;
 
 	private static final List<Object> keys = Arrays.<Object>asList(CLASS_AGENT,CLASS_WALL,CLASS_BOX);
 	
 	public FLState(){
 	}
 	
-	public FLState(FLAgent agent, List<FLWall> walls)
+	public FLState(FLAgent agent, List<FLBlock> walls)
 	{
 		this.agent = agent;
 		this.walls = walls;
@@ -50,7 +51,7 @@ public class FLState implements MutableOOState{
 		if(agent.name().equals(s))
 			return agent;
 		else{
-			for(FLWall w: walls)
+			for(FLBlock w: walls)
 			{
 				if(w.name() == s)
 					return w;
@@ -62,7 +63,7 @@ public class FLState implements MutableOOState{
 	public List<ObjectInstance> objects() {
 		List<ObjectInstance> obj = new ArrayList<ObjectInstance>();
 		obj.add(agent);
-		for(FLWall w: walls)
+		for(FLBlock w: walls)
 		{
 			obj.add(w);
 		}
@@ -76,7 +77,7 @@ public class FLState implements MutableOOState{
 		}
 		else if(walls.get(0).className().equals(s))
 		{
-			for(FLWall w: walls)
+			for(FLBlock w: walls)
 			{
 				ooc.add(w);
 			}
@@ -125,7 +126,7 @@ public class FLState implements MutableOOState{
 		if(key.equals(CLASS_AGENT))
 			agent = (FLAgent) value;
 		else if(key.equals(CLASS_WALL))
-			walls = (List<FLWall>) value;
+			walls = (List<FLBlock>) value;
 		return this;
 	}
 	

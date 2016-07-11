@@ -25,8 +25,10 @@ import burlap.mdp.singleagent.model.SampleModel;
 import burlap.mdp.singleagent.model.statemodel.FullStateModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import edu.umbc.cs.forklift.state.FLAgent;
+import edu.umbc.cs.forklift.state.FLBlock;
+import edu.umbc.cs.forklift.state.FLBlock.FLWall;
 import edu.umbc.cs.forklift.state.FLState;
-import edu.umbc.cs.forklift.state.FLWall;
+import edu.umbc.cs.forklift.state.FLBlock;
 
 public class forklift implements DomainGenerator{
 
@@ -99,7 +101,8 @@ public class forklift implements DomainGenerator{
 				new UniversalActionType(ROTATE_COUNTERCLOCKWISE));
 		
 		domain.addStateClass(CLASS_AGENT, FLAgent.class)
-		.addStateClass(CLASS_WALL, FLWall.class);
+		.addStateClass(CLASS_WALL, FLBlock.FLWall.class)
+		.addStateClass(CLASS_BOX, FLBlock.FLBox.class);
 		
 		return domain;
 	}
@@ -181,9 +184,9 @@ public class forklift implements DomainGenerator{
 					direction -= rotationalSpeed;
 				else if(actionName.equals(ROTATE_COUNTERCLOCKWISE))
 					direction += rotationalSpeed;
+				direction %= 360;
 				if(direction < 0)
 					direction += 360;
-				direction %= 360;
 				FLAgent newAgent = new FLAgent(px,py,direction,5,5,"agent");
 				((MutableOOState) s).set(CLASS_AGENT, newAgent);
 				

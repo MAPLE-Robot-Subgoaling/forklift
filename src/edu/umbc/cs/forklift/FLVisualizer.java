@@ -20,6 +20,11 @@ import burlap.visualizer.ObjectPainter;
 import burlap.visualizer.StateRenderLayer;
 import burlap.visualizer.Visualizer;
 
+
+import static edu.umbc.cs.forklift.forklift.CLASS_AGENT;
+import static edu.umbc.cs.forklift.forklift.CLASS_WALL;
+import static edu.umbc.cs.forklift.forklift.CLASS_BOX;
+
 public class FLVisualizer {
 	
 	public FLVisualizer()
@@ -39,12 +44,8 @@ public class FLVisualizer {
 		OOStatePainter ooStatePainter = new OOStatePainter();
 		slr.addStatePainter(ooStatePainter);
 		
-		System.out.println("entered");
-		
-		ooStatePainter.addObjectClassPainter("agent", new ForkliftPainter("data/resources/robotImagesForklift/"));
-		ooStatePainter.addObjectClassPainter("wall", new WallPainter());
-
-		System.out.println("entered");
+		ooStatePainter.addObjectClassPainter(CLASS_AGENT, new ForkliftPainter("data/resources/robotImagesForklift/"));
+		ooStatePainter.addObjectClassPainter(CLASS_WALL, new WallPainter());
 		
 		return slr;
 	}
