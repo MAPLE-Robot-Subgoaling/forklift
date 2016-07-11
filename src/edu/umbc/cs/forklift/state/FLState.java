@@ -12,7 +12,7 @@ import burlap.mdp.core.state.MutableState;
 
 
 import static edu.umbc.cs.forklift.forklift.*;
-//TODO make all the attributes of a forklift agent play with an agent object, not FLState
+
 public class FLState implements MutableOOState{
 	
 	FLAgent agent;

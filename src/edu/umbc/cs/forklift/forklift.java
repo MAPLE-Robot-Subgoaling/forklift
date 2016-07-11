@@ -184,8 +184,8 @@ public class forklift implements DomainGenerator{
 				agent.set(ATT_D, direction);
 				
 			}else if(actionName.startsWith(PREFIX_MOVE)){
-				double px = (Double)s.get(ATT_X);
-				double py = (Double)s.get(ATT_Y);
+				double px = (Double)agent.get(ATT_X);
+				double py = (Double)agent.get(ATT_Y);
 				double deltax = Math.cos((direction/360)*2*Math.PI) * speed;
 				double deltay = Math.sin((direction/360)*2*Math.PI) * speed;
 				if(actionName.equals(MOVE_FORWARD)){
