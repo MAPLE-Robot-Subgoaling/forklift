@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import burlap.domain.singleagent.lunarlander.state.LLAgent;
-import burlap.domain.singleagent.lunarlander.state.LLBlock;
 import burlap.mdp.core.oo.state.MutableOOState;
 import burlap.mdp.core.oo.state.OOStateUtilities;
 import burlap.mdp.core.oo.state.ObjectInstance;
@@ -24,6 +22,11 @@ public class FLState implements MutableOOState{
 	
 	FLAgent agent;
 	List <FLWall> walls;
+	
+	private static final String CLA_A = "agent";
+	private static final String CLA_W = "wall";
+	private static final String CLA_B = "block";
+	private static final List<Object> keys = Arrays.<Object>asList(CLA_A,CLA_W,CLA_B);
 	
 	public FLState(){
 	}
@@ -52,7 +55,7 @@ public class FLState implements MutableOOState{
 	}
 
 	public ObjectInstance object(String s) {
-		if(agent.name() == s)
+		if(agent.name().equals(s))
 			return agent;
 		else{
 			for(FLWall w: walls)
@@ -75,19 +78,22 @@ public class FLState implements MutableOOState{
 	}
 
 	public List<ObjectInstance> objectsOfClass(String s) {
-		ArrayList
+		List<ObjectInstance> ooc = new ArrayList<ObjectInstance>();;
 		if(agent.className() == s){
-			return new ArrayList<ObjectInstance>(){{add(agent);}};
+			ooc.add(agent);
 		}
 		else if(walls.get(0).className().equals(s))
 		{
-			walls;
+			for(FLWall w: walls)
+			{
+				ooc.add(w);
+			}
 		}
-		return null;
+		return ooc;
 	}
 
 	public MutableOOState addObject(ObjectInstance o) {
-		if(o instanceof LLAgent){
+		if(o instanceof FLAgent){
 			agent = (FLAgent)o;
 		}
 		else if(o instanceof FLWall){
@@ -107,19 +113,28 @@ public class FLState implements MutableOOState{
 		return this;
 	}
 
-	public MutableOOState renameObject(String arg0, String arg1) {
-		// TODO Auto-generated method stub
+	public MutableOOState renameObject(String s1, String s2) {
+		ObjectInstance o = this.object(s1);
+		o = o.copyWithName(s2);
+		this.removeObject(s1);
+		this.addObject(o);
+		return this;
+	}
+
+	public Object get(Object key) {
+		if(key.equals(CLA_A))
+			return agent;
+		else if(key.equals(CLA_W))
+			return walls;
 		return null;
 	}
 
-	public Object get(Object variableKey) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public MutableState set(Object variableKey, Object value) {
-		// TODO Auto-generated method stub
-		return null;
+	public MutableState set(Object key, Object value) {
+		if(key.equals(CLA_A))
+			agent = (FLAgent) value;
+		else if(key.equals(CLA_W))
+			walls = (List<FLWall>) value;
+		return this;
 	}
 	
 
