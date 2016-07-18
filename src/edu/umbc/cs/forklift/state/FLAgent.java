@@ -6,10 +6,12 @@ import static edu.umbc.cs.forklift.forklift.ATT_N;
 import static edu.umbc.cs.forklift.forklift.ATT_W;
 import static edu.umbc.cs.forklift.forklift.ATT_X;
 import static edu.umbc.cs.forklift.forklift.ATT_Y;
+import static edu.umbc.cs.forklift.forklift.CLASS_AGENT;
 
 import java.util.Arrays;
 import java.util.List;
 
+import burlap.mdp.core.oo.state.OOStateUtilities;
 import burlap.mdp.core.oo.state.ObjectInstance;
 
 public class FLAgent implements ObjectInstance {
@@ -110,18 +112,22 @@ public class FLAgent implements ObjectInstance {
 	}
 
 	public String className() {
-		return "agent";
+		return CLASS_AGENT;
 	}
 
 	public ObjectInstance copyWithName(String objectName) {
-		if(!objectName.equals("agent"))
+		if(!objectName.equals(CLASS_AGENT))
 			throw new RuntimeException("Agent must be of class FLAgent");
 
 		return copy();
 	}
 
 	public String name() {
-		return "agent";
+		return CLASS_AGENT;
+	}
+	
+	public String toString() {
+		return OOStateUtilities.objectInstanceToString(this);
 	}
 
 }
