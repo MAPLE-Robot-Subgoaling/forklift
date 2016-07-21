@@ -19,7 +19,7 @@ public class ForkliftClass {
 
 		forklift gen = new forklift();
 		SADomain domain = gen.generateDomain();
-		FLAgent agent = new FLAgent(0,0,90,1,1,"agent");
+		FLAgent agent = new FLAgent(0, 0, 0, 0, 0, 90, 1, 1,"agent");
 		ArrayList<FLBlock> Walls = new ArrayList<FLBlock>();
 		for(int i = 0; i < 10; i++)
 		{
@@ -37,6 +37,7 @@ public class ForkliftClass {
 		exp.addKeyAction("s", forklift.MOVE_BACKWARD, "");
 		exp.addKeyAction("d", forklift.ROTATE_CLOCKWISE, "");
 		exp.addKeyAction("a", forklift.ROTATE_COUNTERCLOCKWISE, "");
+		exp.addKeyAction(" ", forklift.BRAKE, "");
 
 		exp.initGUI();
 

@@ -35,16 +35,21 @@ public class forklift implements DomainGenerator{
 
 	public static final String ATT_X = "x";
 	public static final String ATT_Y = "y";
+	public static final String ATT_VX = "vx";
+	public static final String ATT_VY = "vy";
+	public static final String ATT_VR = "vr";
 	public static final String ATT_D = "d";
 	public static final String ATT_L = "l";
 	public static final String ATT_W = "w";
 	public static final String ATT_N = "n";
-	public static final String PREFIX_MOVE = "M_";
-	public static final String PREFIX_ROTATE = "R_";
-	public static final String MOVE_FORWARD = PREFIX_MOVE+"forward";
-	public static final String MOVE_BACKWARD = PREFIX_MOVE+"backward";
-	public static final String ROTATE_CLOCKWISE = PREFIX_ROTATE+"clockwise";
-	public static final String ROTATE_COUNTERCLOCKWISE = PREFIX_ROTATE+"counterclockwise";
+	public static final String PREFIX_ACCEL = "A_";
+	public static final String PREFIX_ROTATE_ACCEL = "AR_";
+	public static final String MOVE_FORWARD = PREFIX_ACCEL+"forward";
+	public static final String MOVE_BACKWARD = PREFIX_ACCEL+"backward";
+	public static final String ROTATE_CLOCKWISE = PREFIX_ROTATE_ACCEL+"clockwise";
+	public static final String ROTATE_COUNTERCLOCKWISE = PREFIX_ROTATE_ACCEL+"counterclockwise";
+	public static final String IDLE = "idle";
+	public static final String BRAKE = "brake";
 	public static final String CLASS_AGENT = "agent";
 	public static final String CLASS_WALL = "wall";
 	public static final String CLASS_BOX = "box";
@@ -55,8 +60,13 @@ public class forklift implements DomainGenerator{
 	protected RewardFunction rf;
 	protected TerminalFunction tf;
 		
-	double velocity = 0.5;
-	double rotVel = 5;
+	static double forwardAccel = .25;
+	static double backwardAccel = .2;
+	static double rotAccel = 5;
+	static double friction = .1;
+	static double rotFriction = 1;
+	static double brakeFriction = .5;
+	static double brakeRotFriction = 10;
 	
 	public List<Double> goalArea; //xmin,xmax,ymin,ymax
 	public static ArrayList<FLWall> Walls = new ArrayList<FLWall>();
@@ -89,7 +99,7 @@ public class forklift implements DomainGenerator{
 		
 		OOSADomain domain = new OOSADomain();
 		
-		FLModel fmodel = new FLModel(velocity, rotVel);
+		FLModel fmodel = new FLModel(forwardAccel, backwardAccel, rotAccel);
 		
 		tf = new FLTF(Boxes, goalArea);
 		rf = new GoalBasedRF(new FLRF(Boxes, goalArea), 1, 0);
@@ -99,7 +109,9 @@ public class forklift implements DomainGenerator{
 		domain.addActionTypes(new UniversalActionType(MOVE_FORWARD), 
 				new UniversalActionType(MOVE_BACKWARD),
 				new UniversalActionType(ROTATE_CLOCKWISE),
-				new UniversalActionType(ROTATE_COUNTERCLOCKWISE));
+				new UniversalActionType(ROTATE_COUNTERCLOCKWISE),
+				new UniversalActionType(IDLE),
+				new UniversalActionType(BRAKE));
 		
 		domain.addStateClass(CLASS_AGENT, FLAgent.class)
 		.addStateClass(CLASS_WALL, FLBlock.FLWall.class)
@@ -161,54 +173,96 @@ public class forklift implements DomainGenerator{
 	
 	public static class FLModel implements SampleModel
 	{
-		double speed;
-		double rotationalSpeed;
+		double forwardAcceleration;
+		double backwardAcceleration;
+		double rotationalAcceleration;
 		
-		public FLModel(double speed, double rotationalSpeed)
+		public FLModel(double fAcc, double bAcc, double rAcc)
 		{
-			this.speed = speed;
-			this.rotationalSpeed = rotationalSpeed;
+			this.forwardAcceleration= fAcc;
+			this.rotationalAcceleration = rAcc;
 		}
 
 		public State move(State s, Action a) {
-
+			
+			double realForwardAccel = 0;
+			double realClockRotateAccel = 0;
+			double fric =friction;
+			double rfric=rotFriction;
 			FLAgent agent = (FLAgent) s.get(CLASS_AGENT);
 			double direction = (Double)agent.get(ATT_D);
 			double px = (Double)agent.get(ATT_X);
 			double py = (Double)agent.get(ATT_Y);
+			double vx = (Double)agent.get(ATT_VX);
+			double vy = (Double)agent.get(ATT_VY);
+			double vr = (Double)agent.get(ATT_VR);
 			double w = (Double)agent.get(ATT_W);
 			double l = (Double)agent.get(ATT_L);
 			
 			String actionName = a.actionName();
-			//check if action is a rotate or a move
-			if(actionName.startsWith(PREFIX_ROTATE)){
+			//check for new acceleration actions
+			if(actionName.startsWith(PREFIX_ROTATE_ACCEL)){
 				
 				if(actionName.equals(ROTATE_CLOCKWISE))
-					direction -= rotationalSpeed;
+					realClockRotateAccel+=rotationalAcceleration;
 				else if(actionName.equals(ROTATE_COUNTERCLOCKWISE))
-					direction += rotationalSpeed;
-				direction %= 360;
-				if(direction < 0)
-					direction += 360;
-				FLAgent newAgent = new FLAgent(px,py,direction,w,l,"agent");
-				((MutableOOState) s).set(CLASS_AGENT, newAgent);
-				
-			}else if(actionName.startsWith(PREFIX_MOVE)){
-				double deltax = Math.cos((direction/360)*2*Math.PI) * speed;
-				double deltay = Math.sin((direction/360)*2*Math.PI) * speed;
+					realClockRotateAccel-=rotationalAcceleration;
+
+			}else if(actionName.startsWith(PREFIX_ACCEL)){
 				if(actionName.equals(MOVE_FORWARD)){
-					px += deltax;
-					py += deltay;
+					realForwardAccel+=forwardAcceleration;
 				}
-				else if(actionName.equals(MOVE_BACKWARD)){
-					px -= deltax;
-					py -= deltay;
-				}
-				if(collisionCheck(s, px, py, w, l) == false){
-					FLAgent newAgent = new FLAgent(px,py,direction,w,l,"agent");
-					((MutableOOState) s).set(CLASS_AGENT, newAgent);
-				}
+				else if(actionName.equals(MOVE_BACKWARD))
+					realForwardAccel-=backwardAcceleration;
+			}else if(actionName.equals("BRAKE")){
+				fric = brakeFriction;
+				rfric=brakeRotFriction;
 			}
+				
+				
+			//calculate acceleration based on input
+			//friction is modeled as an acceleration
+			//in the opposite direction of velocity
+			//TODO add dynamic friction as a function of velocity on top
+			
+			
+			vr += realClockRotateAccel;
+			
+			if (vr >= rfric)
+				vr -= rfric;
+			else if(vr <= -rfric)
+				vr += rfric;
+			else
+				vr = 0;
+			direction += vr;
+			direction %= 360;
+			if(direction < 0)
+				direction += 360;
+			//now that the real accelerations are calculated
+			//calculate the old real velocity
+			
+			double oldVelocity = Math.sqrt(vx*vx+vy*vy);
+			double newVelocity = oldVelocity+realForwardAccel;
+			if (newVelocity>=  fric)
+				newVelocity -= fric;
+			else if(newVelocity<= -fric)
+				newVelocity += fric;
+			else
+				newVelocity = 0;
+			vx = Math.cos((direction/360)*2*Math.PI) * newVelocity;
+			vy = Math.sin((direction/360)*2*Math.PI) * newVelocity;
+			double npx = px+vx;
+			double npy = py+vy;
+			
+			if(collisionCheck(s, npx, npy, w, l) == false){
+				FLAgent newAgent = new FLAgent(npx, npy, vx, vy, vr, direction,w,l,"agent");
+				((MutableOOState) s).set(CLASS_AGENT, newAgent);
+			}
+				else{
+					//if collision, zero all velocities and revert to previous position
+					FLAgent newAgent = new FLAgent(px, py, 0, 0, 0, direction,w,l,"agent");
+				((MutableOOState) s).set(CLASS_AGENT, newAgent);
+				}
 			return s;
 		}
 

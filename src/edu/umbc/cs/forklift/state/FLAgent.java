@@ -6,6 +6,9 @@ import static edu.umbc.cs.forklift.forklift.ATT_N;
 import static edu.umbc.cs.forklift.forklift.ATT_W;
 import static edu.umbc.cs.forklift.forklift.ATT_X;
 import static edu.umbc.cs.forklift.forklift.ATT_Y;
+import static edu.umbc.cs.forklift.forklift.ATT_VX;
+import static edu.umbc.cs.forklift.forklift.ATT_VY;
+import static edu.umbc.cs.forklift.forklift.ATT_VR;
 import static edu.umbc.cs.forklift.forklift.CLASS_AGENT;
 
 import java.util.Arrays;
@@ -19,21 +22,32 @@ public class FLAgent implements ObjectInstance {
 	private double direction;
 	private double x;
 	private double y;
+	private double vx;
+	private double vy;
+	private double vr;
 	private double yLength;
 	private double xWidth;
 	private String name;
 	
-	private static final List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_D, ATT_W, ATT_L, ATT_N);
+	private static final List<Object> keys = 
+	Arrays.<Object>asList(ATT_X, ATT_Y, 
+						  ATT_VX, ATT_VY, ATT_VR,
+						  ATT_D,
+						  ATT_W, ATT_L, 
+						  ATT_N);
 	
 	public FLAgent()
 	{
 		
 	}
 	
-	public FLAgent(double x, double y, double direction, double yLength, double xWidth, String name)
+	public FLAgent(double x, double y,double vx, double vy, double vr, double direction, double yLength, double xWidth, String name)
 	{
 		this.x = x;
 		this.y = y;
+		this.vx = vx;
+		this.vy = vy;
+		this.vr = vr;
 		this.direction = direction;
 		this.yLength = yLength;
 		this.xWidth = xWidth;
@@ -41,66 +55,54 @@ public class FLAgent implements ObjectInstance {
 	}
 
 	public FLAgent copy() {
-		return new FLAgent(x, y, direction, yLength, xWidth, name);
+		return new FLAgent(x, y, vx, vy, vr, direction, yLength, xWidth, name);
 	}
 
 	public void set(Object variableKey, Object v)
 	{
 		if(variableKey instanceof String)
-			if(variableKey.equals(ATT_X))
-				x = (Double) v;
-			else if(variableKey.equals(ATT_Y))
-				y = (Double) v;
-			else if(variableKey.equals(ATT_D))
-				direction = (Double) v;
-			else if(variableKey.equals(ATT_W))
-				xWidth = (Double) v;
-			else if(variableKey.equals(ATT_L))
-				yLength = (Double) v;
-			else if(variableKey.equals(ATT_N))
-				name = (String) v;
+			//force the String key to an Int key so next if statement will fire
+			if(keys.indexOf(variableKey)!=-1)
+				variableKey=keys.indexOf(variableKey);
 			else
 				throw new RuntimeException("Unknown key " + variableKey);
-		
-		else if(variableKey instanceof Integer)
-				switch((Integer)variableKey){
-					case 0:	x = (Double) v;;
-					case 1:	y = (Double) v;
-					case 2: direction = (Double) v;
-					case 3: xWidth = (Double) v;
-					case 4: yLength = (Double) v;
-					case 5: name = (String) v;
-					default: throw new RuntimeException("Unknown key " + variableKey);
-				}
+		//TODO test this set method
+		if(variableKey instanceof Integer)
+			switch((Integer)variableKey){
+				case 0:	x = (Double) v; break;
+				case 1:	y = (Double) v; break;
+				case 2: vx = (Double) v; break;
+				case 3: vy = (Double) v; break;
+				case 4: vr = (Double) v; break;
+				case 5: direction = (Double) v; break;
+				case 6: xWidth = (Double) v; break;
+				case 7: yLength = (Double) v; break;
+				case 8: name = (String) v; break;
+				default: throw new RuntimeException("Unknown key " + variableKey);
+			}
 		//if key is not string or integer
 		throw new RuntimeException("Unknown key " + variableKey);
 	}
 	
 	public Object get(Object variableKey) {
 		if(variableKey instanceof String)
-			if(variableKey.equals(ATT_X))
-				return x;
-			else if(variableKey.equals(ATT_Y))
-				return y;
-			else if(variableKey.equals(ATT_D))
-				return direction;
-			else if(variableKey.equals(ATT_W))
-				return xWidth;
-			else if(variableKey.equals(ATT_L))
-				return yLength;
-			else if(variableKey.equals(ATT_N))
-				return name;
+			//force the String key to an Int key so next if statement will fire
+			if(keys.indexOf(variableKey)!=-1)
+				variableKey=keys.indexOf(variableKey);
 			else
 				throw new RuntimeException("Unknown key " + variableKey);
-		
-		else if(variableKey instanceof Integer)
+		//TODO test this get method
+		if(variableKey instanceof Integer)
 				switch((Integer)variableKey){
-					case 0:	return x;
-					case 1:	return y;
-					case 2: return direction;
-					case 3: return xWidth;
-					case 4: return yLength;
-					case 5: return name;
+					case 0:	return x; 
+					case 1:	return y; 
+					case 2: return vx;
+					case 3: return vy; 
+					case 4: return vr;
+					case 5: return direction;
+					case 6: return xWidth;
+					case 7: return yLength;
+					case 8: return name;
 					default: throw new RuntimeException("Unknown key " + variableKey);
 				}
 		//if key is not string or integer
