@@ -45,28 +45,31 @@ public class forklift implements DomainGenerator{
 	public static final String MOVE_BACKWARD = PREFIX_MOVE+"backward";
 	public static final String ROTATE_CLOCKWISE = PREFIX_ROTATE+"clockwise";
 	public static final String ROTATE_COUNTERCLOCKWISE = PREFIX_ROTATE+"counterclockwise";
+	public static final String BRAKE = "brake";
+	public static final String PICKUP = "pickup";
+	public static final String DROP = "drop";
 	public static final String CLASS_AGENT = "agent";
 	public static final String CLASS_WALL = "wall";
 	public static final String CLASS_BOX = "box";
 	
-	public static final double xBound = 20;
-	public static final double yBound = 20;
+	public static final float xBound = 20;
+	public static final float yBound = 20;
 	
 	protected RewardFunction rf;
 	protected TerminalFunction tf;
 		
-	double velocity = 0.5;
-	double rotVel = 5;
+	float velocity = 0.5f;
+	float rotVel = 5;
 	
-	public List<Double> goalArea; //xmin,xmax,ymin,ymax
+	public List<Float> goalArea; //xmin,xmax,ymin,ymax
 	public static ArrayList<FLWall> Walls = new ArrayList<FLWall>();
 	public static ArrayList<FLState> Boxes = new ArrayList<FLState>();
 	
 	public static int captured = 0; 
 	
-	public forklift()
+	public forklift(List<Float> goalArea)
 	{
-		
+		this.goalArea = goalArea;
 	}
 	
 	public TerminalFunction getTf() {
@@ -99,7 +102,10 @@ public class forklift implements DomainGenerator{
 		domain.addActionTypes(new UniversalActionType(MOVE_FORWARD), 
 				new UniversalActionType(MOVE_BACKWARD),
 				new UniversalActionType(ROTATE_CLOCKWISE),
-				new UniversalActionType(ROTATE_COUNTERCLOCKWISE));
+				new UniversalActionType(ROTATE_COUNTERCLOCKWISE),
+				new UniversalActionType(BRAKE),
+				new UniversalActionType(PICKUP),
+				new UniversalActionType(DROP));
 		
 		domain.addStateClass(CLASS_AGENT, FLAgent.class)
 		.addStateClass(CLASS_WALL, FLBlock.FLWall.class)
@@ -161,10 +167,10 @@ public class forklift implements DomainGenerator{
 	
 	public static class FLModel implements SampleModel
 	{
-		double speed;
-		double rotationalSpeed;
+		float speed;
+		float rotationalSpeed;
 		
-		public FLModel(double speed, double rotationalSpeed)
+		public FLModel(float speed, float rotationalSpeed)
 		{
 			this.speed = speed;
 			this.rotationalSpeed = rotationalSpeed;
@@ -173,29 +179,31 @@ public class forklift implements DomainGenerator{
 		public State move(State s, Action a) {
 
 			FLAgent agent = (FLAgent) s.get(CLASS_AGENT);
-			double direction = (Double)agent.get(ATT_D);
-			double px = (Double)agent.get(ATT_X);
-			double py = (Double)agent.get(ATT_Y);
-			double w = (Double)agent.get(ATT_W);
-			double l = (Double)agent.get(ATT_L);
+			float direction = (Float)agent.get(ATT_D);
+			float px = (Float)agent.get(ATT_X);
+			float py = (Float)agent.get(ATT_Y);
+			float w = (Float)agent.get(ATT_W);
+			float l = (Float)agent.get(ATT_L);
 			
 			String actionName = a.actionName();
 			//check if action is a rotate or a move
 			if(actionName.startsWith(PREFIX_ROTATE)){
 				
 				if(actionName.equals(ROTATE_CLOCKWISE))
-					direction -= rotationalSpeed;
-				else if(actionName.equals(ROTATE_COUNTERCLOCKWISE))
 					direction += rotationalSpeed;
+				else if(actionName.equals(ROTATE_COUNTERCLOCKWISE))
+					direction -= rotationalSpeed;
 				direction %= 360;
 				if(direction < 0)
 					direction += 360;
-				FLAgent newAgent = new FLAgent(px,py,direction,w,l,"agent");
-				((MutableOOState) s).set(CLASS_AGENT, newAgent);
+				if(collisionCheck(s, px, py, w, l) == false){
+					FLAgent newAgent = new FLAgent(px,py,direction,w,l,"agent");
+					((MutableOOState) s).set(CLASS_AGENT, newAgent);
+				}
 				
 			}else if(actionName.startsWith(PREFIX_MOVE)){
-				double deltax = Math.cos((direction/360)*2*Math.PI) * speed;
-				double deltay = Math.sin((direction/360)*2*Math.PI) * speed;
+				float deltax = (float)Math.cos(Math.toRadians(360-direction)) * speed;
+				float deltay = (float)Math.sin(Math.toRadians(360-direction)) * speed;
 				if(actionName.equals(MOVE_FORWARD)){
 					px += deltax;
 					py += deltay;
@@ -214,6 +222,7 @@ public class forklift implements DomainGenerator{
 
 		public EnvironmentOutcome sample(State s, Action a) {
 			s = s.copy();
+			State next = move(s,a);
 			return new EnvironmentOutcome(s, a, move(s, a), -1, false);
 		}
 
@@ -221,27 +230,27 @@ public class forklift implements DomainGenerator{
 			return false;
 		}
 		
-		public boolean collisionCheck(State s, double x, double y, double w, double l)
+		public boolean collisionCheck(State s, float x, float y, float w, float l)
 		{
 			List<ObjectInstance> walls =  ((MutableOOState) s).objectsOfClass(CLASS_WALL);
 			for(ObjectInstance wall: walls)
 			{
-				if((x > (Double)wall.get(ATT_X) && 
-					x < (Double)wall.get(ATT_X) + (Double)wall.get(ATT_W) &&
-					y > (Double)wall.get(ATT_Y) &&
-					y < (Double)wall.get(ATT_Y) + (Double)wall.get(ATT_L))||
-					(x > (Double)wall.get(ATT_X) && 
-					x < (Double)wall.get(ATT_X) + (Double)wall.get(ATT_W) &&
-					y + l > (Double)wall.get(ATT_Y) &&
-					y + l < (Double)wall.get(ATT_Y) + (Double)wall.get(ATT_L))||
-					(x + w > (Double)wall.get(ATT_X) && 
-					x + w< (Double)wall.get(ATT_X) + (Double)wall.get(ATT_W) &&
-					y > (Double)wall.get(ATT_Y) &&
-					y < (Double)wall.get(ATT_Y) + (Double)wall.get(ATT_L))||
-					(x + w > (Double)wall.get(ATT_X) && 
-					x + w < (Double)wall.get(ATT_X) + (Double)wall.get(ATT_W) &&
-					y + l > (Double)wall.get(ATT_Y) &&
-					y + l < (Double)wall.get(ATT_Y) + (Double)wall.get(ATT_L))
+				if((x >= (Float)wall.get(ATT_X) && 
+					x <= (Float)wall.get(ATT_X) + (Float)wall.get(ATT_W) &&
+					y >= (Float)wall.get(ATT_Y) &&
+					y <= (Float)wall.get(ATT_Y) + (Float)wall.get(ATT_L))||
+					(x >= (Float)wall.get(ATT_X) && 
+					x <= (Float)wall.get(ATT_X) + (Float)wall.get(ATT_W) &&
+					y + l >= (Float)wall.get(ATT_Y) &&
+					y + l <= (Float)wall.get(ATT_Y) + (Float)wall.get(ATT_L))||
+					(x + w >= (Float)wall.get(ATT_X) && 
+					x + w <= (Float)wall.get(ATT_X) + (Float)wall.get(ATT_W) &&
+					y >= (Float)wall.get(ATT_Y) &&
+					y <= (Float)wall.get(ATT_Y) + (Float)wall.get(ATT_L))||
+					(x + w >= (Float)wall.get(ATT_X) && 
+					x + w <= (Float)wall.get(ATT_X) + (Float)wall.get(ATT_W) &&
+					y + l >= (Float)wall.get(ATT_Y) &&
+					y + l <= (Float)wall.get(ATT_Y) + (Float)wall.get(ATT_L))
 						){
 					return true;
 				}
@@ -255,9 +264,9 @@ public class forklift implements DomainGenerator{
 	{
 		
 		private ArrayList<FLState> Boxes;
-		private List<Double> goal;
+		private List<Float> goal;
 		
-		public FLTF(ArrayList<FLState> Boxes, List<Double> goal)
+		public FLTF(ArrayList<FLState> Boxes, List<Float> goal)
 		{
 			this.Boxes = Boxes;
 			this.goal = goal;
@@ -265,19 +274,19 @@ public class forklift implements DomainGenerator{
 		public boolean isTerminal(State s) {
 			for(FLState b: Boxes)
 			{
-				if((Double)b.get(forklift.ATT_X) < goal.get(0))
+				if((Float)b.get(forklift.ATT_X) < goal.get(0))
 				{
 					return false;
 				}
-				else if((Double)b.get(forklift.ATT_X) > goal.get(1))
+				else if((Float)b.get(forklift.ATT_X) > goal.get(1))
 				{
 					return false;
 				}
-				else if((Double)b.get(forklift.ATT_Y) < goal.get(2))
+				else if((Float)b.get(forklift.ATT_Y) < goal.get(2))
 				{
 					return false;
 				}
-				else if((Double)b.get(forklift.ATT_Y) > goal.get(3))
+				else if((Float)b.get(forklift.ATT_Y) > goal.get(3))
 				{
 					return false;
 				}
@@ -290,9 +299,9 @@ public class forklift implements DomainGenerator{
 	public static class FLRF implements TerminalFunction
 	{
 		private ArrayList<FLState> Boxes;
-		private List<Double> goal;
+		private List<Float> goal;
 		
-		public FLRF(ArrayList<FLState> Boxes, List<Double> goal)
+		public FLRF(ArrayList<FLState> Boxes, List<Float> goal)
 		{
 			this.Boxes = Boxes;
 			this.goal = goal;
@@ -302,10 +311,10 @@ public class forklift implements DomainGenerator{
 			int captured = 0;
 			for(FLState b: Boxes)
 			{
-				if((Double)b.get(forklift.ATT_X) > goal.get(0) && 
-						(Double)b.get(forklift.ATT_X) < goal.get(1) &&
-						(Double)b.get(forklift.ATT_Y) > goal.get(2) &&
-						(Double)b.get(forklift.ATT_Y) < goal.get(3)){
+				if((Float)b.get(forklift.ATT_X) > goal.get(0) && 
+						(Float)b.get(forklift.ATT_X) < goal.get(1) &&
+						(Float)b.get(forklift.ATT_Y) > goal.get(2) &&
+						(Float)b.get(forklift.ATT_Y) < goal.get(3)){
 					captured++;
 				}
 			}

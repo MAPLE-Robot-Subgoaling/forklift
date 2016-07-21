@@ -16,11 +16,11 @@ import burlap.mdp.core.oo.state.ObjectInstance;
 
 public class FLAgent implements ObjectInstance {
 
-	private double direction;
-	private double x;
-	private double y;
-	private double yLength;
-	private double xWidth;
+	private float direction;
+	private float x;
+	private float y;
+	private float yLength;
+	private float xWidth;
 	private String name;
 	
 	private static final List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_D, ATT_W, ATT_L, ATT_N);
@@ -30,7 +30,7 @@ public class FLAgent implements ObjectInstance {
 		
 	}
 	
-	public FLAgent(double x, double y, double direction, double yLength, double xWidth, String name)
+	public FLAgent(float x, float y, float direction, float yLength, float xWidth, String name)
 	{
 		this.x = x;
 		this.y = y;
@@ -48,15 +48,15 @@ public class FLAgent implements ObjectInstance {
 	{
 		if(variableKey instanceof String)
 			if(variableKey.equals(ATT_X))
-				x = (Double) v;
+				x = (Float) v;
 			else if(variableKey.equals(ATT_Y))
-				y = (Double) v;
+				y = (Float) v;
 			else if(variableKey.equals(ATT_D))
-				direction = (Double) v;
+				direction = (Float) v;
 			else if(variableKey.equals(ATT_W))
-				xWidth = (Double) v;
+				xWidth = (Float) v;
 			else if(variableKey.equals(ATT_L))
-				yLength = (Double) v;
+				yLength = (Float) v;
 			else if(variableKey.equals(ATT_N))
 				name = (String) v;
 			else
@@ -64,11 +64,11 @@ public class FLAgent implements ObjectInstance {
 		
 		else if(variableKey instanceof Integer)
 				switch((Integer)variableKey){
-					case 0:	x = (Double) v;;
-					case 1:	y = (Double) v;
-					case 2: direction = (Double) v;
-					case 3: xWidth = (Double) v;
-					case 4: yLength = (Double) v;
+					case 0:	x = (Float) v;;
+					case 1:	y = (Float) v;
+					case 2: direction = (Float) v;
+					case 3: xWidth = (Float) v;
+					case 4: yLength = (Float) v;
 					case 5: name = (String) v;
 					default: throw new RuntimeException("Unknown key " + variableKey);
 				}

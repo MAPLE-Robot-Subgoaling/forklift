@@ -1,8 +1,12 @@
 package edu.umbc.cs.forklift;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
@@ -68,14 +72,14 @@ public class FLVisualizer {
 			{
 				g2.setColor(Color.BLACK);
 				
-				double x = (Double) ob.get(forklift.ATT_X);
-				double y = (Double) ob.get(forklift.ATT_Y);
+				float x = (Float) ob.get(forklift.ATT_X);
+				float y = (Float) ob.get(forklift.ATT_Y);
 				
-				float width = cWidth / (float)forklift.xBound;
-				float height = cHeight / (float)forklift.yBound;
+				float width = cWidth / forklift.xBound;
+				float height = cHeight / forklift.yBound;
 				
-				float rx = (float)x * width;
-				float ry = cHeight - height - (float)y * height;
+				float rx = x * width;
+				float ry = cHeight - height - y * height;
 				
 				g2.fill(new Rectangle2D.Float(rx, ry, width, height));
 			}
@@ -114,9 +118,9 @@ public class FLVisualizer {
 				
 		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) 
 		{
-			double x = (Double) ob.get(forklift.ATT_X);
-			double y = (Double) ob.get(forklift.ATT_Y);
-			double direction = (Double)ob.get(forklift.ATT_D);
+			float x = (Float) ob.get(forklift.ATT_X);
+			float y = (Float) ob.get(forklift.ATT_Y);
+			float direction = (Float)ob.get(forklift.ATT_D);
 			
 			float width = cWidth / (float)forklift.xBound;
 			float height = cHeight / (float)forklift.yBound;
@@ -126,10 +130,10 @@ public class FLVisualizer {
 			
 			String dir = null;
 					
-			if(direction > 315 || direction < 45)
-			{
+			//if(direction > 315 || direction < 45)
+			//{
 				dir = "east";
-			}
+			/*}
 			else if(direction > 225)
 			{
 				dir = "south";
@@ -141,10 +145,22 @@ public class FLVisualizer {
 			else
 			{
 				dir = "north";
-			}
+			}*/
 					
 			BufferedImage img = this.dirToImage.get(dir);
-			g2.drawImage(img, (int)rx, (int)ry, (int)width, (int)height, this);
+			
+			AffineTransform rot = new AffineTransform(); 
+			Rectangle r = g2.getDeviceConfiguration().getBounds();
+			rot.translate(r.getWidth() * (x + 1)/ forklift.xBound, r.getHeight() * (forklift.yBound - y - 1) / forklift.yBound);
+			rot.rotate(Math.toRadians(direction)); 
+			double cWidthSize = r.getWidth()/forklift.xBound;
+			double cHeightSize = r.getHeight()/forklift.yBound/2;
+			double scaleWidth = cWidthSize/img.getWidth();
+			double scaleHeight = cHeightSize/img.getHeight();
+			rot.scale(scaleWidth, scaleHeight);
+			rot.translate(-img.getWidth()/2,-img.getHeight()/2);
+			g2.drawImage(img, rot, this);
+			
 			
 		}
 		
