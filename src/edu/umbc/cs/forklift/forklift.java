@@ -225,8 +225,8 @@ public class forklift implements DomainGenerator{
 			//in the opposite direction of velocity
 			//TODO add dynamic friction as a function of velocity on top
 			
-			
-			vr += realClockRotateAccel;
+			//for some reason this makes it clockwise
+			vr -= realClockRotateAccel;
 			
 			if (vr >= rfric)
 				vr -= rfric;
