@@ -53,6 +53,9 @@ public class FLAgent implements ObjectInstance {
 		this.xWidth = xWidth;
 		this.name = name;
 	}
+	public FLAgent(float x, float y, float direction, float yLength, float xWidth, String name){
+		this(x,y,0,0,0,direction,yLength,xWidth,name);
+	}
 
 	public FLAgent copy() {
 		return new FLAgent(x, y, vx, vy, vr, direction, yLength, xWidth, name);
