@@ -184,13 +184,14 @@ public class forklift implements DomainGenerator{
 		public FLModel(float fAcc, float bAcc, float rAcc)
 		{
 			this.forwardAcceleration= fAcc;
+			this.backwardAcceleration = bAcc;
 			this.rotationalAcceleration = rAcc;
 		}
 
 		public State move(State s, Action a) {
 			
-			float realForwardAccel = 0;
-			float realClockRotateAccel = 0;
+			float realForwardAccel = 0.0f;
+			float realClockRotateAccel = 0.0f;
 			float fric =friction;
 			float rfric=rotFriction;
 			FLAgent agent = (FLAgent) s.get(CLASS_AGENT);
@@ -215,9 +216,12 @@ public class forklift implements DomainGenerator{
 			}else if(actionName.startsWith(PREFIX_ACCEL)){
 				if(actionName.equals(MOVE_FORWARD)){
 					realForwardAccel+=forwardAcceleration;
+					System.out.println(realForwardAccel);
 				}
-				else if(actionName.equals(MOVE_BACKWARD))
+				else if(actionName.equals(MOVE_BACKWARD)){
 					realForwardAccel-=backwardAcceleration;
+					System.out.println(realForwardAccel);
+				}
 			}else if(actionName.equals("BRAKE")){
 				fric = brakeFriction;
 				rfric=brakeRotFriction;
@@ -247,9 +251,9 @@ public class forklift implements DomainGenerator{
 			
 			float oldVelocity = (float) Math.sqrt(vx*vx+vy*vy);
 			float newVelocity = oldVelocity+realForwardAccel;
-			if (newVelocity>=  fric)
+			if (newVelocity >=  fric)
 				newVelocity -= fric;
-			else if(newVelocity<= -fric)
+			else if(newVelocity <= -fric)
 				newVelocity += fric;
 			else
 				newVelocity = 0;
