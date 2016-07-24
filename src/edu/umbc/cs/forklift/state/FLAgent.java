@@ -24,6 +24,8 @@ public class FLAgent implements ObjectInstance {
 	private float y;
 	private float yLength;
 	private float xWidth;
+	private float ad;
+	private float ar;
 	private float vx;
 	private float vy;
 	private float vr;
