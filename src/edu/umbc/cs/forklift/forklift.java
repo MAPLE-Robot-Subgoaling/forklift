@@ -268,6 +268,7 @@ public class forklift implements DomainGenerator{
 			}
 				else{
 					//if collision, zero all velocities and revert to previous position
+					//TODO: is it possible to store a previous state's position and jump further backwards? 
 					FLAgent newAgent = new FLAgent(px, py, direction,w,l,"agent");
 				((MutableOOState) s).set(CLASS_AGENT, newAgent);
 				}
@@ -276,7 +277,8 @@ public class forklift implements DomainGenerator{
 
 		public EnvironmentOutcome sample(State s, Action a) {
 			s = s.copy();
-			State next = move(s,a);
+			//what is this?
+			//State next = move(s,a);
 			return new EnvironmentOutcome(s, a, move(s, a), -1, false);
 		}
 
