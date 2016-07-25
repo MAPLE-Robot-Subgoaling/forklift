@@ -1,5 +1,7 @@
 package edu.umbc.cs.forklift;
 
+import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,60 +30,24 @@ public class ForkliftClass {
 		SADomain domain = gen.generateDomain();
 		FLAgent agent = new FLAgent(1.1, 1.1, 0, 0, 0, 0, 1, 0.5,"agent");
 		ArrayList<FLBlock> Walls = new ArrayList<FLBlock>();
-		Map<Integer, List<Double>> doors = new HashMap<Integer, List<Double>>();
-		List<Double> door1 = new ArrayList<Double>();
-		List<Double> door2 = new ArrayList<Double>();
-		List<Double> door3 = new ArrayList<Double>();
-		List<Double> door4 = new ArrayList<Double>();
-		List<Double> door5 = new ArrayList<Double>();
-		List<Double> door6 = new ArrayList<Double>();
-		List<Double> door7 = new ArrayList<Double>();
-		List<Double> door8 = new ArrayList<Double>();
-		List<Double> door9 = new ArrayList<Double>();
-		List<Double> door10 = new ArrayList<Double>();
-		List<Double> door11 = new ArrayList<Double>();
-		List<Double> door12 = new ArrayList<Double>();
-		door1.add(5.0);
-		door1.add(10.0);
-		door2.add(4.0);
-		door2.add(10.0);
-		door3.add(6.0);
-		door3.add(10.0);
-		door4.add(10.0);
-		door4.add(5.0);
-		door5.add(10.0);
-		door5.add(4.0);
-		door6.add(10.0);
-		door6.add(6.0);
-		door7.add(15.0);
-		door7.add(10.0);
-		door8.add(14.0);
-		door8.add(10.0);
-		door9.add(16.0);
-		door9.add(10.0);
-		door10.add(10.0);
-		door10.add(15.0);
-		door11.add(10.0);
-		door11.add(14.0);
-		door12.add(10.0);
-		door12.add(16.0);
-		doors.put(0, door1);
-		doors.put(1, door2);
-		doors.put(2, door3);
-		doors.put(3, door4);
-		doors.put(4, door5);
-		doors.put(5, door6);
-		doors.put(6, door7);
-		doors.put(7, door8);
-		doors.put(8, door9);
-		doors.put(9, door10);
-		doors.put(10, door11);
-		doors.put(11, door12);
+		ArrayList<Point2D.Double> gaps = new ArrayList<Point2D.Double>();
+		gaps.add(new Point2D.Double(5.0,10.0));
+		gaps.add(new Point2D.Double(4.0, 10.0)); 
+		gaps.add(new Point2D.Double(6.0, 10.0)); 
+		gaps.add(new Point2D.Double(10.0, 5.0)); 
+		gaps.add(new Point2D.Double(4.0, 10.0)); 
+		gaps.add(new Point2D.Double(10.0, 6.0)); 
+		gaps.add(new Point2D.Double(15.0, 10.0)); 
+		gaps.add(new Point2D.Double(14.0, 10.0)); 
+		gaps.add(new Point2D.Double(16.0, 10.0)); 
+		gaps.add(new Point2D.Double(10.0, 15.0)); 
+		gaps.add(new Point2D.Double(10.0, 14.0)); 
+		gaps.add(new Point2D.Double(10.0, 16.0)); 
 
-		Walls.addAll(GenerateRoom(0,10,0,10,doors));
-		Walls.addAll(GenerateRoom(10,19,0,10,doors));
-		Walls.addAll(GenerateRoom(10,19,10,19,doors));
-		Walls.addAll(GenerateRoom(0,10,10,19,doors));
+		Walls.addAll(GenerateRoom(0,10,0,10,gaps));
+		Walls.addAll(GenerateRoom(10,19,0,10,gaps));
+		Walls.addAll(GenerateRoom(10,19,10,19,gaps));
+		Walls.addAll(GenerateRoom(0,10,10,19,gaps));
 		
 		FLState state = new FLState(agent, Walls);
 		SimulatedEnvironment env = new SimulatedEnvironment(domain, state);
@@ -102,21 +68,21 @@ public class ForkliftClass {
 	}
 	
 	//preconditions: x1 < x2 and y1 < y2
-	private static List<FLWall> GenerateRoom(int x1, int x2, int y1, int y2, Map<Integer, List<Double>> doors){
+	private static List<FLWall> GenerateRoom(int x1, int x2, int y1, int y2, ArrayList<Point2D.Double> doors){
 		List<FLWall> room = new ArrayList<FLWall>();
 		for(int i = x1; i <= x2; i++){
 			
 			boolean addY1 = true;
-			for(List<Double> door: doors.values()){
-				if(i == door.get(0) && y1 == door.get(1))
+			for(Point2D.Double door: doors){
+				if(i == door.x && y1 == door.y)
 					addY1 = false;
 			}
 			if(addY1){
 				room.add(new FLWall(i, y1, 1, 1, "Wall " + i + ", "+ y1));
 			}
 			boolean addY2 = true;
-			for(List<Double> door: doors.values()){
-				if(i == door.get(0) && y2 == door.get(1))
+			for(Point2D.Double door: doors){
+				if(i == door.x && y2 == door.y)
 					addY2 = false;
 			}
 			if(addY2){
@@ -125,16 +91,16 @@ public class ForkliftClass {
 		}
 		for(int j  = y1+1; j <= y2-1; j++){
 			boolean addX1 = true;
-			for(List<Double> door: doors.values()){
-				if(j == door.get(1) && x1 == door.get(0))
+			for(Point2D.Double door: doors){
+				if(j == door.y && x1 == door.x)
 					addX1 = false;
 			}
 			if(addX1){
 				room.add(new FLWall(x1, j, 1, 1, "Wall " + x1 + ", "+ j));
 			}
 			boolean addX2 = true;
-			for(List<Double> door: doors.values()){
-				if(j == door.get(1) && x2 == door.get(0))
+			for(Point2D.Double door: doors){
+				if(j == door.y && x2 == door.x)
 					addX2 = false;
 			}
 			if(addX2){
