@@ -158,7 +158,7 @@ public class FLVisualizer {
 			double cHeightSize = r.getHeight()/forklift.yBound/2;
 			double scaleWidth = cWidthSize/img.getWidth();
 			double scaleHeight = cHeightSize/img.getHeight();
-			System.out.println(cWidthSize + " - " + cHeightSize + " - " + scaleWidth + " - " + scaleHeight);
+//			System.out.println(cWidthSize + " - " + cHeightSize + " - " + scaleWidth + " - " + scaleHeight);
 			rot.scale(scaleWidth, scaleHeight);
 			rot.translate(-img.getWidth()/2,-img.getHeight()/2);
 			g2.drawImage(img, rot, this);
