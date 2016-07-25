@@ -61,12 +61,12 @@ public class forklift implements DomainGenerator{
 	
 	protected RewardFunction rf;
 	protected TerminalFunction tf;
-	static double forwardAccel = .05f;
-	static double backwardAccel = .025f;
+	static double forwardAccel = .05;
+	static double backwardAccel = .025;
 	static double rotAccel = 2;
-	static double friction = .01f;
-	static double rotFriction = 1f;
-	static double brakeFriction = .2f;
+	static double friction = .01;
+	static double rotFriction = 1;
+	static double brakeFriction = .2;
 	static double brakeRotFriction = 10;
 	
 	public List<Double> goalArea; //xmin,xmax,ymin,ymax
@@ -190,8 +190,8 @@ public class forklift implements DomainGenerator{
 
 		public State move(State s, Action a) {
 			
-			double realForwardAccel = 0.0f;
-			double realClockRotateAccel = 0.0f;
+			double realForwardAccel = 0.0;
+			double realClockRotateAccel = 0.0;
 			double fric =friction;
 			double rfric=rotFriction;
 			FLAgent agent = (FLAgent) s.get(CLASS_AGENT);
@@ -268,7 +268,7 @@ public class forklift implements DomainGenerator{
 			}
 				else{
 					//if collision, zero all velocities and revert to previous position
-					FLAgent newAgent = new FLAgent(px, py, 0, 0, 0, direction,w,l,"agent");
+					FLAgent newAgent = new FLAgent(px, py, direction,w,l,"agent");
 				((MutableOOState) s).set(CLASS_AGENT, newAgent);
 				}
 			return s;
