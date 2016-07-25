@@ -26,7 +26,7 @@ public class ForkliftClass {
 
 		forklift gen = new forklift(goalArea);
 		SADomain domain = gen.generateDomain();
-		FLAgent agent = new FLAgent(1.1f, 1.1f, 0, 0, 0, 0, 1, 0.5f,"agent");
+		FLAgent agent = new FLAgent(1.1, 1.1, 0, 0, 0, 0, 1, 0.5,"agent");
 		ArrayList<FLBlock> Walls = new ArrayList<FLBlock>();
 		Map<Integer, List<Double>> doors = new HashMap<Integer, List<Double>>();
 		List<Double> door1 = new ArrayList<Double>();
