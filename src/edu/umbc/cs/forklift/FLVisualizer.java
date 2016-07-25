@@ -72,16 +72,16 @@ public class FLVisualizer {
 			{
 				g2.setColor(Color.BLACK);
 				
-				float x = (Float) ob.get(forklift.ATT_X);
-				float y = (Float) ob.get(forklift.ATT_Y);
+				double x = (Double) ob.get(forklift.ATT_X);
+				double y = (Double) ob.get(forklift.ATT_Y);
 				
-				float width = cWidth / forklift.xBound;
-				float height = cHeight / forklift.yBound;
+				double width = cWidth / forklift.xBound;
+				double height = cHeight / forklift.yBound;
 				
-				float rx = x * width;
-				float ry = cHeight - height - y * height;
+				double rx = x * width;
+				double ry = cHeight - height - y * height;
 				
-				g2.fill(new Rectangle2D.Float(rx, ry, width, height));
+				g2.fill(new Rectangle2D.Double(rx, ry, width, height));
 			}
 			else
 			{
@@ -118,15 +118,15 @@ public class FLVisualizer {
 				
 		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) 
 		{
-			float x = (Float) ob.get(forklift.ATT_X);
-			float y = (Float) ob.get(forklift.ATT_Y);
-			float direction = (Float)ob.get(forklift.ATT_D);
+			double x = (Double) ob.get(forklift.ATT_X);
+			double y = (Double) ob.get(forklift.ATT_Y);
+			double direction = (Double)ob.get(forklift.ATT_D);
 			
-			float width = cWidth / (float)forklift.xBound;
-			float height = cHeight / (float)forklift.yBound;
+			double width = cWidth / (double)forklift.xBound;
+			double height = cHeight / (double)forklift.yBound;
 			
-			float rx = (float)x * width;
-			float ry = cHeight - height - (float)y * height;
+			double rx = (double)x * width;
+			double ry = cHeight - height - (double)y * height;
 			
 			String dir = null;
 					
@@ -160,7 +160,6 @@ public class FLVisualizer {
 			rot.scale(scaleWidth, scaleHeight);
 			rot.translate(-img.getWidth()/2,-img.getHeight()/2);
 			g2.drawImage(img, rot, this);
-			
 			
 		}
 		

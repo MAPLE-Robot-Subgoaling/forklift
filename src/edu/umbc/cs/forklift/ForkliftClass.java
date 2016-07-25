@@ -18,53 +18,53 @@ public class ForkliftClass {
 
 	public static void main(String [] args){
 		
-		List<Float> goalArea = new ArrayList<Float>();
-		goalArea.add(12.0f);
-		goalArea.add(19.0f);
-		goalArea.add(12.0f);
-		goalArea.add(19.0f);
+		List<Double> goalArea = new ArrayList<Double>();
+		goalArea.add(12.0);
+		goalArea.add(19.0);
+		goalArea.add(12.0);
+		goalArea.add(19.0);
 
 		forklift gen = new forklift(goalArea);
 		SADomain domain = gen.generateDomain();
 		FLAgent agent = new FLAgent(1.1f, 1.1f, 0, 0, 0, 0, 1, 0.5f,"agent");
 		ArrayList<FLBlock> Walls = new ArrayList<FLBlock>();
-		Map<Integer, List<Float>> doors = new HashMap<Integer, List<Float>>();
-		List<Float> door1 = new ArrayList<Float>();
-		List<Float> door2 = new ArrayList<Float>();
-		List<Float> door3 = new ArrayList<Float>();
-		List<Float> door4 = new ArrayList<Float>();
-		List<Float> door5 = new ArrayList<Float>();
-		List<Float> door6 = new ArrayList<Float>();
-		List<Float> door7 = new ArrayList<Float>();
-		List<Float> door8 = new ArrayList<Float>();
-		List<Float> door9 = new ArrayList<Float>();
-		List<Float> door10 = new ArrayList<Float>();
-		List<Float> door11 = new ArrayList<Float>();
-		List<Float> door12 = new ArrayList<Float>();
-		door1.add(5.0f);
-		door1.add(10.0f);
-		door2.add(4.0f);
-		door2.add(10.0f);
-		door3.add(6.0f);
-		door3.add(10.0f);
-		door4.add(10.0f);
-		door4.add(5.0f);
-		door5.add(10.0f);
-		door5.add(4.0f);
-		door6.add(10.0f);
-		door6.add(6.0f);
-		door7.add(15.0f);
-		door7.add(10.0f);
-		door8.add(14.0f);
-		door8.add(10.0f);
-		door9.add(16.0f);
-		door9.add(10.0f);
-		door10.add(10.0f);
-		door10.add(15.0f);
-		door11.add(10.0f);
-		door11.add(14.0f);
-		door12.add(10.0f);
-		door12.add(16.0f);
+		Map<Integer, List<Double>> doors = new HashMap<Integer, List<Double>>();
+		List<Double> door1 = new ArrayList<Double>();
+		List<Double> door2 = new ArrayList<Double>();
+		List<Double> door3 = new ArrayList<Double>();
+		List<Double> door4 = new ArrayList<Double>();
+		List<Double> door5 = new ArrayList<Double>();
+		List<Double> door6 = new ArrayList<Double>();
+		List<Double> door7 = new ArrayList<Double>();
+		List<Double> door8 = new ArrayList<Double>();
+		List<Double> door9 = new ArrayList<Double>();
+		List<Double> door10 = new ArrayList<Double>();
+		List<Double> door11 = new ArrayList<Double>();
+		List<Double> door12 = new ArrayList<Double>();
+		door1.add(5.0);
+		door1.add(10.0);
+		door2.add(4.0);
+		door2.add(10.0);
+		door3.add(6.0);
+		door3.add(10.0);
+		door4.add(10.0);
+		door4.add(5.0);
+		door5.add(10.0);
+		door5.add(4.0);
+		door6.add(10.0);
+		door6.add(6.0);
+		door7.add(15.0);
+		door7.add(10.0);
+		door8.add(14.0);
+		door8.add(10.0);
+		door9.add(16.0);
+		door9.add(10.0);
+		door10.add(10.0);
+		door10.add(15.0);
+		door11.add(10.0);
+		door11.add(14.0);
+		door12.add(10.0);
+		door12.add(16.0);
 		doors.put(0, door1);
 		doors.put(1, door2);
 		doors.put(2, door3);
@@ -102,12 +102,12 @@ public class ForkliftClass {
 	}
 	
 	//preconditions: x1 < x2 and y1 < y2
-	private static List<FLWall> GenerateRoom(int x1, int x2, int y1, int y2, Map<Integer, List<Float>> doors){
+	private static List<FLWall> GenerateRoom(int x1, int x2, int y1, int y2, Map<Integer, List<Double>> doors){
 		List<FLWall> room = new ArrayList<FLWall>();
 		for(int i = x1; i <= x2; i++){
 			
 			boolean addY1 = true;
-			for(List<Float> door: doors.values()){
+			for(List<Double> door: doors.values()){
 				if(i == door.get(0) && y1 == door.get(1))
 					addY1 = false;
 			}
@@ -115,7 +115,7 @@ public class ForkliftClass {
 				room.add(new FLWall(i, y1, 1, 1, "Wall " + i + ", "+ y1));
 			}
 			boolean addY2 = true;
-			for(List<Float> door: doors.values()){
+			for(List<Double> door: doors.values()){
 				if(i == door.get(0) && y2 == door.get(1))
 					addY2 = false;
 			}
@@ -125,7 +125,7 @@ public class ForkliftClass {
 		}
 		for(int j  = y1+1; j <= y2-1; j++){
 			boolean addX1 = true;
-			for(List<Float> door: doors.values()){
+			for(List<Double> door: doors.values()){
 				if(j == door.get(1) && x1 == door.get(0))
 					addX1 = false;
 			}
@@ -133,7 +133,7 @@ public class ForkliftClass {
 				room.add(new FLWall(x1, j, 1, 1, "Wall " + x1 + ", "+ j));
 			}
 			boolean addX2 = true;
-			for(List<Float> door: doors.values()){
+			for(List<Double> door: doors.values()){
 				if(j == door.get(1) && x2 == door.get(0))
 					addX2 = false;
 			}

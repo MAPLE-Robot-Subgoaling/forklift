@@ -56,26 +56,26 @@ public class forklift implements DomainGenerator{
 	public static final String CLASS_WALL = "wall";
 	public static final String CLASS_BOX = "box";
 	
-	public static final float xBound = 20;
-	public static final float yBound = 20;
+	public static final double xBound = 20;
+	public static final double yBound = 20;
 	
 	protected RewardFunction rf;
 	protected TerminalFunction tf;
-	static float forwardAccel = .05f;
-	static float backwardAccel = .025f;
-	static float rotAccel = 2;
-	static float friction = .01f;
-	static float rotFriction = 1f;
-	static float brakeFriction = .2f;
-	static float brakeRotFriction = 10;
+	static double forwardAccel = .05f;
+	static double backwardAccel = .025f;
+	static double rotAccel = 2;
+	static double friction = .01f;
+	static double rotFriction = 1f;
+	static double brakeFriction = .2f;
+	static double brakeRotFriction = 10;
 	
-	public List<Float> goalArea; //xmin,xmax,ymin,ymax
+	public List<Double> goalArea; //xmin,xmax,ymin,ymax
 	public static ArrayList<FLWall> Walls = new ArrayList<FLWall>();
 	public static ArrayList<FLState> Boxes = new ArrayList<FLState>();
 	
 	public static int captured = 0; 
 	
-	public forklift(List<Float> goalArea)
+	public forklift(List<Double> goalArea)
 	{
 		this.goalArea = goalArea;
 	}
@@ -177,11 +177,11 @@ public class forklift implements DomainGenerator{
 	
 	public static class FLModel implements SampleModel
 	{
-		float forwardAcceleration;
-		float backwardAcceleration;
-		float rotationalAcceleration;
+		double forwardAcceleration;
+		double backwardAcceleration;
+		double rotationalAcceleration;
 		
-		public FLModel(float fAcc, float bAcc, float rAcc)
+		public FLModel(double fAcc, double bAcc, double rAcc)
 		{
 			this.forwardAcceleration= fAcc;
 			this.backwardAcceleration = bAcc;
@@ -190,19 +190,19 @@ public class forklift implements DomainGenerator{
 
 		public State move(State s, Action a) {
 			
-			float realForwardAccel = 0.0f;
-			float realClockRotateAccel = 0.0f;
-			float fric =friction;
-			float rfric=rotFriction;
+			double realForwardAccel = 0.0f;
+			double realClockRotateAccel = 0.0f;
+			double fric =friction;
+			double rfric=rotFriction;
 			FLAgent agent = (FLAgent) s.get(CLASS_AGENT);
-			float direction = (Float)agent.get(ATT_D);
-			float px = (Float)agent.get(ATT_X);
-			float py = (Float)agent.get(ATT_Y);
-			float vx = (Float)agent.get(ATT_VX);
-			float vy = (Float)agent.get(ATT_VY);
-			float vr = (Float)agent.get(ATT_VR);
-			float w = (Float)agent.get(ATT_W);
-			float l = (Float)agent.get(ATT_L);
+			double direction = (Double)agent.get(ATT_D);
+			double px = (Double)agent.get(ATT_X);
+			double py = (Double)agent.get(ATT_Y);
+			double vx = (Double)agent.get(ATT_VX);
+			double vy = (Double)agent.get(ATT_VY);
+			double vr = (Double)agent.get(ATT_VR);
+			double w = (Double)agent.get(ATT_W);
+			double l = (Double)agent.get(ATT_L);
 			
 			String actionName = a.actionName();
 			//check for new acceleration actions
@@ -249,18 +249,18 @@ public class forklift implements DomainGenerator{
 			//now that the real accelerations are calculated
 			//calculate the old real velocity
 			
-			float oldVelocity = (float) Math.sqrt(vx*vx+vy*vy);
-			float newVelocity = oldVelocity+realForwardAccel;
+			double oldVelocity = (double) Math.sqrt(vx*vx+vy*vy);
+			double newVelocity = oldVelocity+realForwardAccel;
 			if (newVelocity >=  fric)
 				newVelocity -= fric;
 			else if(newVelocity <= -fric)
 				newVelocity += fric;
 			else
 				newVelocity = 0;
-			vx = (float) (Math.cos(Math.toRadians(360-direction)) * newVelocity);
-			vy = (float) (Math.sin(Math.toRadians(360-direction)) * newVelocity);
-			float npx = px+vx;
-			float npy = py+vy;
+			vx = (double) (Math.cos(Math.toRadians(360-direction)) * newVelocity);
+			vy = (double) (Math.sin(Math.toRadians(360-direction)) * newVelocity);
+			double npx = px+vx;
+			double npy = py+vy;
 			
 			if(collisionCheck(s, npx, npy, w, l) == false){
 				FLAgent newAgent = new FLAgent(npx, npy, vx, vy, vr, direction,w,l,"agent");
@@ -284,27 +284,27 @@ public class forklift implements DomainGenerator{
 			return false;
 		}
 		
-		public boolean collisionCheck(State s, float x, float y, float w, float l)
+		public boolean collisionCheck(State s, double x, double y, double w, double l)
 		{
 			List<ObjectInstance> walls =  ((MutableOOState) s).objectsOfClass(CLASS_WALL);
 			for(ObjectInstance wall: walls)
 			{
-				if((x >= (Float)wall.get(ATT_X) && 
-					x <= (Float)wall.get(ATT_X) + (Float)wall.get(ATT_W) &&
-					y >= (Float)wall.get(ATT_Y) &&
-					y <= (Float)wall.get(ATT_Y) + (Float)wall.get(ATT_L))||
-					(x >= (Float)wall.get(ATT_X) && 
-					x <= (Float)wall.get(ATT_X) + (Float)wall.get(ATT_W) &&
-					y + l >= (Float)wall.get(ATT_Y) &&
-					y + l <= (Float)wall.get(ATT_Y) + (Float)wall.get(ATT_L))||
-					(x + w >= (Float)wall.get(ATT_X) && 
-					x + w <= (Float)wall.get(ATT_X) + (Float)wall.get(ATT_W) &&
-					y >= (Float)wall.get(ATT_Y) &&
-					y <= (Float)wall.get(ATT_Y) + (Float)wall.get(ATT_L))||
-					(x + w >= (Float)wall.get(ATT_X) && 
-					x + w <= (Float)wall.get(ATT_X) + (Float)wall.get(ATT_W) &&
-					y + l >= (Float)wall.get(ATT_Y) &&
-					y + l <= (Float)wall.get(ATT_Y) + (Float)wall.get(ATT_L))
+				if((x >= (Double)wall.get(ATT_X) && 
+					x <= (Double)wall.get(ATT_X) + (Double)wall.get(ATT_W) &&
+					y >= (Double)wall.get(ATT_Y) &&
+					y <= (Double)wall.get(ATT_Y) + (Double)wall.get(ATT_L))||
+					(x >= (Double)wall.get(ATT_X) && 
+					x <= (Double)wall.get(ATT_X) + (Double)wall.get(ATT_W) &&
+					y + l >= (Double)wall.get(ATT_Y) &&
+					y + l <= (Double)wall.get(ATT_Y) + (Double)wall.get(ATT_L))||
+					(x + w >= (Double)wall.get(ATT_X) && 
+					x + w <= (Double)wall.get(ATT_X) + (Double)wall.get(ATT_W) &&
+					y >= (Double)wall.get(ATT_Y) &&
+					y <= (Double)wall.get(ATT_Y) + (Double)wall.get(ATT_L))||
+					(x + w >= (Double)wall.get(ATT_X) && 
+					x + w <= (Double)wall.get(ATT_X) + (Double)wall.get(ATT_W) &&
+					y + l >= (Double)wall.get(ATT_Y) &&
+					y + l <= (Double)wall.get(ATT_Y) + (Double)wall.get(ATT_L))
 						){
 					return true;
 				}
@@ -318,9 +318,9 @@ public class forklift implements DomainGenerator{
 	{
 		
 		private ArrayList<FLState> Boxes;
-		private List<Float> goal;
+		private List<Double> goal;
 		
-		public FLTF(ArrayList<FLState> Boxes, List<Float> goal)
+		public FLTF(ArrayList<FLState> Boxes, List<Double> goal)
 		{
 			this.Boxes = Boxes;
 			this.goal = goal;
@@ -328,19 +328,19 @@ public class forklift implements DomainGenerator{
 		public boolean isTerminal(State s) {
 			for(FLState b: Boxes)
 			{
-				if((Float)b.get(forklift.ATT_X) < goal.get(0))
+				if((Double)b.get(forklift.ATT_X) < goal.get(0))
 				{
 					return false;
 				}
-				else if((Float)b.get(forklift.ATT_X) > goal.get(1))
+				else if((Double)b.get(forklift.ATT_X) > goal.get(1))
 				{
 					return false;
 				}
-				else if((Float)b.get(forklift.ATT_Y) < goal.get(2))
+				else if((Double)b.get(forklift.ATT_Y) < goal.get(2))
 				{
 					return false;
 				}
-				else if((Float)b.get(forklift.ATT_Y) > goal.get(3))
+				else if((Double)b.get(forklift.ATT_Y) > goal.get(3))
 				{
 					return false;
 				}
@@ -353,9 +353,9 @@ public class forklift implements DomainGenerator{
 	public static class FLRF implements TerminalFunction
 	{
 		private ArrayList<FLState> Boxes;
-		private List<Float> goal;
+		private List<Double> goal;
 		
-		public FLRF(ArrayList<FLState> Boxes, List<Float> goal)
+		public FLRF(ArrayList<FLState> Boxes, List<Double> goal)
 		{
 			this.Boxes = Boxes;
 			this.goal = goal;
@@ -365,10 +365,10 @@ public class forklift implements DomainGenerator{
 			int captured = 0;
 			for(FLState b: Boxes)
 			{
-				if((Float)b.get(forklift.ATT_X) > goal.get(0) && 
-						(Float)b.get(forklift.ATT_X) < goal.get(1) &&
-						(Float)b.get(forklift.ATT_Y) > goal.get(2) &&
-						(Float)b.get(forklift.ATT_Y) < goal.get(3)){
+				if((Double)b.get(forklift.ATT_X) > goal.get(0) && 
+						(Double)b.get(forklift.ATT_X) < goal.get(1) &&
+						(Double)b.get(forklift.ATT_Y) > goal.get(2) &&
+						(Double)b.get(forklift.ATT_Y) < goal.get(3)){
 					captured++;
 				}
 			}

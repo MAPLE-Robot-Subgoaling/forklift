@@ -16,16 +16,16 @@ import burlap.mdp.core.oo.state.ObjectInstance;
 
 public class FLBlock implements ObjectInstance {
 
-	private float x;
-	private float y;
-	private float yLength;
-	private float xWidth;
+	private double x;
+	private double y;
+	private double yLength;
+	private double xWidth;
 	private String name;
 	private static String className;
 	
 	private static final List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_W, ATT_L, ATT_N);
 	
-	public FLBlock(float x, float y, float yLength, float xWidth, String name) {
+	public FLBlock(double x, double y, double yLength, double xWidth, String name) {
 		this.x = x;
 		this.y = y;
 		this.yLength = yLength;
@@ -86,14 +86,14 @@ public class FLBlock implements ObjectInstance {
 	}
 	public static class FLBox extends FLBlock{
 
-		public FLBox(float x, float y, float yLength, float xWidth, String name) {
+		public FLBox(double x, double y, double yLength, double xWidth, String name) {
 			super(x, y, yLength, xWidth, name);
 			className = CLASS_BOX;
 		}
 	}
 	public static class FLWall extends FLBlock{
 
-		public FLWall(float x, float y, float yLength, float xWidth, String name) {
+		public FLWall(double x, double y, double yLength, double xWidth, String name) {
 			super(x, y, yLength, xWidth, name);
 			className = CLASS_WALL;
 		}

@@ -19,16 +19,16 @@ import burlap.mdp.core.oo.state.ObjectInstance;
 
 public class FLAgent implements ObjectInstance {
 
-	private float direction;
-	private float x;
-	private float y;
-	private float yLength;
-	private float xWidth;
-	private float ad;
-	private float ar;
-	private float vx;
-	private float vy;
-	private float vr;
+	private double direction;
+	private double x;
+	private double y;
+	private double yLength;
+	private double xWidth;
+	private double ad;
+	private double ar;
+	private double vx;
+	private double vy;
+	private double vr;
 	private String name;
 	
 	private static final List<Object> keys = 
@@ -43,7 +43,7 @@ public class FLAgent implements ObjectInstance {
 		
 	}
 	
-	public FLAgent(float x, float y, float vx, float vy, float vr, float direction, float yLength, float xWidth, String name)	
+	public FLAgent(double x, double y, double vx, double vy, double vr, double direction, double yLength, double xWidth, String name)	
 	{
 		this.x = x;
 		this.y = y;
@@ -55,7 +55,7 @@ public class FLAgent implements ObjectInstance {
 		this.xWidth = xWidth;
 		this.name = name;
 	}
-	public FLAgent(float x, float y, float direction, float yLength, float xWidth, String name){
+	public FLAgent(double x, double y, double direction, double yLength, double xWidth, String name){
 		this(x,y,0,0,0,direction,yLength,xWidth,name);
 	}
 
@@ -74,14 +74,14 @@ public class FLAgent implements ObjectInstance {
 		//TODO test this set method
 		if(variableKey instanceof Integer)
 			switch((Integer)variableKey){
-				case 0:	x = (Float) v;;
-				case 1:	y = (Float) v;
-				case 2: vx = (Float) v; break;
-				case 3: vy = (Float) v; break;
-				case 4: vr = (Float) v; break;
-				case 5: direction = (Float) v;
-				case 6: xWidth = (Float) v;
-				case 7: yLength = (Float) v;
+				case 0:	x = (Double) v;;
+				case 1:	y = (Double) v;
+				case 2: vx = (Double) v; break;
+				case 3: vy = (Double) v; break;
+				case 4: vr = (Double) v; break;
+				case 5: direction = (Double) v;
+				case 6: xWidth = (Double) v;
+				case 7: yLength = (Double) v;
 				case 8: name = (String) v;
 				default: throw new RuntimeException("Unknown key " + variableKey);
 			}
