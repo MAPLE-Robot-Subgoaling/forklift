@@ -8,6 +8,7 @@ import static edu.umbc.cs.forklift.forklift.ATT_Y;
 
 import static edu.umbc.cs.forklift.forklift.CLASS_WALL;
 import static edu.umbc.cs.forklift.forklift.CLASS_BOX;
+import static edu.umbc.cs.forklift.forklift.CLASS_BLOCK;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +32,7 @@ public class FLBlock implements ObjectInstance {
 		this.yLength = yLength;
 		this.xWidth = xWidth;
 		this.name = name;
-		className = "block";
+		className = CLASS_BLOCK;
 	}
 
 	public List<Object> variableKeys() {

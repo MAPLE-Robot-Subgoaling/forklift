@@ -1,14 +1,21 @@
 package edu.umbc.cs.forklift;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import burlap.domain.singleagent.lunarlander.LunarLanderDomain.OnPadPF;
+import burlap.domain.singleagent.lunarlander.LunarLanderDomain.TouchGroundPF;
+import burlap.domain.singleagent.lunarlander.LunarLanderDomain.TouchPadPF;
+import burlap.domain.singleagent.lunarlander.LunarLanderDomain.TouchSurfacePF;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.action.ActionType;
 import burlap.mdp.core.action.UniversalActionType;
+import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.MutableOOState;
+import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.common.GoalBasedRF;
@@ -18,6 +25,7 @@ import burlap.mdp.singleagent.model.SampleModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import edu.umbc.cs.forklift.state.FLAgent;
 import edu.umbc.cs.forklift.state.FLBlock;
+import edu.umbc.cs.forklift.state.FLBlock.FLBox;
 import edu.umbc.cs.forklift.state.FLBlock.FLWall;
 import edu.umbc.cs.forklift.state.FLState;
 
@@ -43,6 +51,7 @@ public class forklift implements DomainGenerator{
 	public static final String PICKUP = "pickup";
 	public static final String DROP = "drop";
 	public static final String CLASS_AGENT = "agent";
+	public static final String CLASS_BLOCK = "block";
 	public static final String CLASS_WALL = "wall";
 	public static final String CLASS_BOX = "box";
 	
@@ -60,14 +69,21 @@ public class forklift implements DomainGenerator{
 	static double brakeRotFriction = 10;
 	
 	public List<Double> goalArea; //xmin,xmax,ymin,ymax
-	public static ArrayList<FLWall> Walls = new ArrayList<FLWall>();
-	public static ArrayList<FLState> Boxes = new ArrayList<FLState>();
 	
 	public static int captured = 0; 
 	
 	public forklift(List<Double> goalArea)
 	{
 		this.goalArea = goalArea;
+	}
+	public List<PropositionalFunction> generatePfs(){
+		return Arrays.asList(
+				(PropositionalFunction)new BoxesInArea("goalpf"));
+//		return Arrays.asList(
+//				new OnPadPF(PF_ON_PAD),
+//				new TouchPadPF(PF_TOUTCH_PAD),
+//				new TouchSurfacePF(PF_TOUCH_SURFACE),
+//				new TouchGroundPF(PF_ON_GROUND, this.physParams.ymin));
 	}
 	
 	public TerminalFunction getTf() {
@@ -92,8 +108,8 @@ public class forklift implements DomainGenerator{
 		
 		FLModel fmodel = new FLModel(forwardAccel, backwardAccel, rotAccel);
 		
-		tf = new FLTF(Boxes, goalArea);
-		rf = new GoalBasedRF(new FLRF(Boxes, goalArea), 1, 0);
+//		tf = new FLTF(Boxes, goalArea);
+//		rf = new GoalBasedRF(new FLRF(Boxes, goalArea), 1, 0);
 		
 		domain.setModel(fmodel);
 		
@@ -108,62 +124,64 @@ public class forklift implements DomainGenerator{
 				);
 		
 		domain.addStateClass(CLASS_AGENT, FLAgent.class)
+//this will have marginal utility, and should be supported in FLState
+//		.addStateClass(CLASS_BLOCK, FLBlock.class)
 		.addStateClass(CLASS_WALL, FLBlock.FLWall.class)
 		.addStateClass(CLASS_BOX, FLBlock.FLBox.class);
 		
 		return domain;
 	}
 	
-	public class FLAction implements Action
-	{
-		private String name;
-
-		public FLAction(String n)
-		{
-			name = n;
-		}
-		
-		public String actionName() {
-			return name;
-		}
-
-		public Action copy() {
-			return this;
-		}
-		
-	}
+//	public class FLAction implements Action
+//	{
+//		private String name;
+//
+//		public FLAction(String n)
+//		{
+//			name = n;
+//		}
+//		
+//		public String actionName() {
+//			return name;
+//		}
+//
+//		public Action copy() {
+//			return this;
+//		}
+//		
+//	}
 	
-	public class FLActionType implements ActionType
-	{
-		String name;
-		List<Action> actions;
-
-		public FLActionType(String name, List<Action> actions)
-		{
-			this.name = name;
-			this.actions = actions;
-		}
-		
-		public List<Action> allApplicableActions(State s) {
-			return actions;
-		}
-
-		public Action associatedAction(String s) {
-			for(Action a: actions)
-			{
-				if(s.equals(a.actionName())){
-					return a;
-				}
-			}
-			
-			return null;
-		}
-
-		public String typeName() {
-			return name;
-		}
-		
-	}
+//	public class FLActionType implements ActionType
+//	{
+//		String name;
+//		List<Action> actions;
+//
+//		public FLActionType(String name, List<Action> actions)
+//		{
+//			this.name = name;
+//			this.actions = actions;
+//		}
+//		
+//		public List<Action> allApplicableActions(State s) {
+//			return actions;
+//		}
+//
+//		public Action associatedAction(String s) {
+//			for(Action a: actions)
+//			{
+//				if(s.equals(a.actionName())){
+//					return a;
+//				}
+//			}
+//			
+//			return null;
+//		}
+//
+//		public String typeName() {
+//			return name;
+//		}
+//		
+//	}
 	
 	public static class FLModel implements SampleModel
 	{
@@ -306,74 +324,112 @@ public class forklift implements DomainGenerator{
 		}
 		
 	}
-	
-	public static class FLTF implements TerminalFunction
-	{
-		
-		private ArrayList<FLState> Boxes;
-		private List<Double> goal;
-		
-		public FLTF(ArrayList<FLState> Boxes, List<Double> goal)
-		{
-			this.Boxes = Boxes;
-			this.goal = goal;
+	public class BoxInArea extends PropositionalFunction{
+		public BoxInArea(String name){
+			super(name, new String[]{CLASS_BOX});
 		}
-		public boolean isTerminal(State s) {
-			for(FLState b: Boxes)
-			{
-				if((Double)b.get(forklift.ATT_X) < goal.get(0))
-				{
-					return false;
-				}
-				else if((Double)b.get(forklift.ATT_X) > goal.get(1))
-				{
-					return false;
-				}
-				else if((Double)b.get(forklift.ATT_Y) < goal.get(2))
-				{
-					return false;
-				}
-				else if((Double)b.get(forklift.ATT_Y) > goal.get(3))
-				{
-					return false;
-				}
-			}
-			return true;
+
+		@Override
+		public boolean isTrue(OOState s, String... params) {
+			FLBlock.FLBox box = (FLBlock.FLBox)s.object(params[0]);
+			Double nearX = (Double)box.get(forklift.ATT_X);
+			Double farX = nearX+(Double)box.get(forklift.ATT_W);
+			Double nearY = (Double)box.get(forklift.ATT_Y);
+			Double farY = nearY+(Double)box.get(forklift.ATT_L);
+
+			if(farX < goalArea.get(0)||
+			   nearX > goalArea.get(1)||
+			   nearY < goalArea.get(2)||
+			   farY > goalArea.get(3))
+				return false;
+		return true;
 		}
-		
 	}
-	
-	public static class FLRF implements TerminalFunction
-	{
-		private ArrayList<FLState> Boxes;
-		private List<Double> goal;
-		
-		public FLRF(ArrayList<FLState> Boxes, List<Double> goal)
-		{
-			this.Boxes = Boxes;
-			this.goal = goal;
+	public class BoxesInArea extends PropositionalFunction{
+		private BoxInArea pf;
+		public BoxesInArea(String name){
+			super(name, new String[]{CLASS_BOX});
 		}
 		
-		public boolean isTerminal(State arg0) {
-			int captured = 0;
-			for(FLState b: Boxes)
-			{
-				if((Double)b.get(forklift.ATT_X) > goal.get(0) && 
-						(Double)b.get(forklift.ATT_X) < goal.get(1) &&
-						(Double)b.get(forklift.ATT_Y) > goal.get(2) &&
-						(Double)b.get(forklift.ATT_Y) < goal.get(3)){
-					captured++;
-				}
-			}
-			if(captured > forklift.captured)
-			{
-				forklift.captured = captured;
-				return true;
-			}
-			return false;
+		@Override
+		public boolean isTrue(OOState s, String... params) {
+			pf = new BoxInArea("boxchecker");
+			boolean allInArea = true;
+			List<ObjectInstance> boxes = (List<ObjectInstance>)s.objectsOfClass(CLASS_BOX);
+			for( ObjectInstance b : boxes)
+				if (!pf.isTrue(s, ((FLBlock.FLBox)b).name()))
+					allInArea = false;
+				
+			return allInArea;
 		}
-		
 	}
-	
-	
+//	public static class FLTF implements TerminalFunction
+//	{
+//		
+//		private ArrayList<FLState> Boxes;
+//		private List<Double> goal;
+//		
+//		public FLTF(ArrayList<FLState> Boxes, List<Double> goal)
+//		{
+//			this.Boxes = Boxes;
+//			this.goal = goal;
+//		}
+//		public boolean isTerminal(State s) {
+//			for(FLState b: Boxes)
+//			{
+//				if((Double)b.get(forklift.ATT_X) < goal.get(0))
+//				{
+//					return false;
+//				}
+//				else if((Double)b.get(forklift.ATT_X) > goal.get(1))
+//				{
+//					return false;
+//				}
+//				else if((Double)b.get(forklift.ATT_Y) < goal.get(2))
+//				{
+//					return false;
+//				}
+//				else if((Double)b.get(forklift.ATT_Y) > goal.get(3))
+//				{
+//					return false;
+//				}
+//			}
+//			return true;
+//		}
+//		
+//	}
+//	
+//	public static class FLRF implements TerminalFunction
+//	{
+//		private ArrayList<FLState> Boxes;
+//		private List<Double> goal;
+//		
+//		public FLRF(ArrayList<FLState> Boxes, List<Double> goal)
+//		{
+//			this.Boxes = Boxes;
+//			this.goal = goal;
+//		}
+//		
+//		public boolean isTerminal(State arg0) {
+//			int captured = 0;
+//			for(FLState b: Boxes)
+//			{
+//				if((Double)b.get(forklift.ATT_X) > goal.get(0) && 
+//						(Double)b.get(forklift.ATT_X) < goal.get(1) &&
+//						(Double)b.get(forklift.ATT_Y) > goal.get(2) &&
+//						(Double)b.get(forklift.ATT_Y) < goal.get(3)){
+//					captured++;
+//				}
+//			}
+//			if(captured > forklift.captured)
+//			{
+//				forklift.captured = captured;
+//				return true;
+//			}
+//			return false;
+//		}
+//		
+//	}
+//	
+//	
 }
