@@ -85,11 +85,32 @@ public class FLBlock implements ObjectInstance {
 		return copy();
 	}
 	public static class FLBox extends FLBlock{
-
+		boolean onGround;
 		public FLBox(double x, double y, double yLength, double xWidth, String name) {
 			super(x, y, yLength, xWidth, name);
 			className = CLASS_BOX;
+			onGround = true;
 		}
+		public boolean pickUp(){
+			//if the box is not on the ground, return false and do nothing
+			if (!onGround)
+				return false;
+			else
+				onGround = false;
+			//if the box was on the ground, it now isn't, return true
+			return true;
+		}
+		
+		public boolean putDown(){
+			//same deal here but reverse
+			if(onGround)
+				return false;
+			else
+				onGround = true;
+			return true;
+		}
+		
+		
 	}
 	public static class FLWall extends FLBlock{
 

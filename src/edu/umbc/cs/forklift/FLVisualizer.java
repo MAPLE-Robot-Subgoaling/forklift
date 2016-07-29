@@ -50,6 +50,7 @@ public class FLVisualizer {
 		
 		ooStatePainter.addObjectClassPainter(CLASS_AGENT, new ForkliftPainter("data/resources/robotImagesForklift/"));
 		ooStatePainter.addObjectClassPainter(CLASS_WALL, new WallPainter());
+		ooStatePainter.addObjectClassPainter(CLASS_BOX, new BoxPainter());
 		
 		return slr;
 	}
@@ -89,7 +90,41 @@ public class FLVisualizer {
 			}
 		}
 	}
-		
+	public static class BoxPainter implements ObjectPainter
+	{
+		private String imgPath;
+		public BoxPainter()
+		{
+			this.imgPath = "none";
+		}
+		public BoxPainter(String imgPath)
+		{
+			this.imgPath = imgPath;
+		}
+
+		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) 
+		{
+			if(imgPath.equals("none"))
+			{
+				g2.setColor(Color.RED);
+				
+				double x = (Double) ob.get(forklift.ATT_X);
+				double y = (Double) ob.get(forklift.ATT_Y);
+				
+				double width = cWidth / forklift.xBound;
+				double height = cHeight / forklift.yBound;
+				
+				double rx = x * width;
+				double ry = cHeight - height - y * height;
+				
+				g2.fill(new Rectangle2D.Double(rx, ry, width, height));
+			}
+			else
+			{
+				
+			}
+		}
+	}
 	public static class ForkliftPainter implements ObjectPainter, ImageObserver
 	{
 		
@@ -101,16 +136,16 @@ public class FLVisualizer {
 		{
 			this.imgPath = imgPath;
 			
-			if(!imgPath.endsWith("/")){
-				imgPath = imgPath + "/";
+			if(!this.imgPath.endsWith("/")){
+				this.imgPath = this.imgPath + "/";
 			}
 	
 			dirToImage = new HashMap<String, BufferedImage>(4);
 			try {
-				dirToImage.put("north", ImageIO.read(new File(imgPath + "robotNorth.png")));
-				dirToImage.put("south", ImageIO.read(new File(imgPath + "robotSouth.png")));
-				dirToImage.put("east", ImageIO.read(new File(imgPath + "robotEast.png")));
-				dirToImage.put("west", ImageIO.read(new File(imgPath + "robotWest.png")));
+				dirToImage.put("north", ImageIO.read(new File(this.imgPath + "robotNorth.png")));
+				dirToImage.put("south", ImageIO.read(new File(this.imgPath + "robotSouth.png")));
+				dirToImage.put("east", ImageIO.read(new File(this.imgPath + "robotEast.png")));
+				dirToImage.put("west", ImageIO.read(new File(this.imgPath + "robotWest.png")));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
