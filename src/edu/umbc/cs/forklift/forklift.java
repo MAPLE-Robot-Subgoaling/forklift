@@ -288,25 +288,26 @@ public class forklift implements DomainGenerator{
 		
 		public boolean collisionCheck(State s, double x, double y, double w, double l)
 		{
-			List<ObjectInstance> walls =  ((MutableOOState) s).objectsOfClass(CLASS_WALL);
-			for(ObjectInstance wall: walls)
+			List<ObjectInstance> blocks =  ((MutableOOState) s).objectsOfClass(CLASS_WALL);
+			blocks.addAll(((MutableOOState) s).objectsOfClass(CLASS_BOX));
+			for(ObjectInstance block: blocks)
 			{
-				if((x >= (Double)wall.get(ATT_X) && 
-					x <= (Double)wall.get(ATT_X) + (Double)wall.get(ATT_W) &&
-					y >= (Double)wall.get(ATT_Y) &&
-					y <= (Double)wall.get(ATT_Y) + (Double)wall.get(ATT_L))||
-					(x >= (Double)wall.get(ATT_X) && 
-					x <= (Double)wall.get(ATT_X) + (Double)wall.get(ATT_W) &&
-					y + l >= (Double)wall.get(ATT_Y) &&
-					y + l <= (Double)wall.get(ATT_Y) + (Double)wall.get(ATT_L))||
-					(x + w >= (Double)wall.get(ATT_X) && 
-					x + w <= (Double)wall.get(ATT_X) + (Double)wall.get(ATT_W) &&
-					y >= (Double)wall.get(ATT_Y) &&
-					y <= (Double)wall.get(ATT_Y) + (Double)wall.get(ATT_L))||
-					(x + w >= (Double)wall.get(ATT_X) && 
-					x + w <= (Double)wall.get(ATT_X) + (Double)wall.get(ATT_W) &&
-					y + l >= (Double)wall.get(ATT_Y) &&
-					y + l <= (Double)wall.get(ATT_Y) + (Double)wall.get(ATT_L))
+				if((x >= (Double)block.get(ATT_X) && 
+					x <= (Double)block.get(ATT_X) + (Double)block.get(ATT_W) &&
+					y >= (Double)block.get(ATT_Y) &&
+					y <= (Double)block.get(ATT_Y) + (Double)block.get(ATT_L))||
+					(x >= (Double)block.get(ATT_X) && 
+					x <= (Double)block.get(ATT_X) + (Double)block.get(ATT_W) &&
+					y + l >= (Double)block.get(ATT_Y) &&
+					y + l <= (Double)block.get(ATT_Y) + (Double)block.get(ATT_L))||
+					(x + w >= (Double)block.get(ATT_X) && 
+					x + w <= (Double)block.get(ATT_X) + (Double)block.get(ATT_W) &&
+					y >= (Double)block.get(ATT_Y) &&
+					y <= (Double)block.get(ATT_Y) + (Double)block.get(ATT_L))||
+					(x + w >= (Double)block.get(ATT_X) && 
+					x + w <= (Double)block.get(ATT_X) + (Double)block.get(ATT_W) &&
+					y + l >= (Double)block.get(ATT_Y) &&
+					y + l <= (Double)block.get(ATT_Y) + (Double)block.get(ATT_L))
 						){
 					return true;
 				}
