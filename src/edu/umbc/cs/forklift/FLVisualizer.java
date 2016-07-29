@@ -1,12 +1,14 @@
 package edu.umbc.cs.forklift;
 
+import static edu.umbc.cs.forklift.forklift.CLASS_AGENT;
+import static edu.umbc.cs.forklift.forklift.CLASS_BOX;
+import static edu.umbc.cs.forklift.forklift.CLASS_WALL;
+
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
@@ -23,11 +25,6 @@ import burlap.visualizer.OOStatePainter;
 import burlap.visualizer.ObjectPainter;
 import burlap.visualizer.StateRenderLayer;
 import burlap.visualizer.Visualizer;
-
-
-import static edu.umbc.cs.forklift.forklift.CLASS_AGENT;
-import static edu.umbc.cs.forklift.forklift.CLASS_WALL;
-import static edu.umbc.cs.forklift.forklift.CLASS_BOX;
 
 public class FLVisualizer {
 	
@@ -130,7 +127,7 @@ public class FLVisualizer {
 		
 		private String imgPath;
 		
-		Map<String, BufferedImage> dirToImage;
+		BufferedImage img;
 		
 		public ForkliftPainter(String imgPath)
 		{
@@ -140,15 +137,11 @@ public class FLVisualizer {
 				this.imgPath = this.imgPath + "/";
 			}
 	
-			dirToImage = new HashMap<String, BufferedImage>(4);
 			try {
-				dirToImage.put("north", ImageIO.read(new File(this.imgPath + "robotNorth.png")));
-				dirToImage.put("south", ImageIO.read(new File(this.imgPath + "robotSouth.png")));
-				dirToImage.put("east", ImageIO.read(new File(this.imgPath + "robotEast.png")));
-				dirToImage.put("west", ImageIO.read(new File(this.imgPath + "robotWest.png")));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+				img = ImageIO.read(new File(this.imgPath + "robotEast.png"));
+				}catch (IOException e) {
+					e.printStackTrace();
+				}
 		}
 				
 		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) 
@@ -157,32 +150,6 @@ public class FLVisualizer {
 			double y = (Double) ob.get(forklift.ATT_Y);
 			double direction = (Double)ob.get(forklift.ATT_D);
 			
-			double width = cWidth / (double)forklift.xBound;
-			double height = cHeight / (double)forklift.yBound;
-			
-			double rx = (double)x * width;
-			double ry = cHeight - height - (double)y * height;
-			
-			String dir = null;
-					
-			//if(direction > 315 || direction < 45)
-			//{
-				dir = "east";
-			/*}
-			else if(direction > 225)
-			{
-				dir = "south";
-			}
-			else if(direction > 135)
-			{
-				dir = "west";
-			}
-			else
-			{
-				dir = "north";
-			}*/
-					
-			BufferedImage img = this.dirToImage.get(dir);
 			
 			AffineTransform rot = new AffineTransform(); 
 			Rectangle r = g2.getDeviceConfiguration().getBounds();

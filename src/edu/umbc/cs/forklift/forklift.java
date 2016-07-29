@@ -1,35 +1,25 @@
 package edu.umbc.cs.forklift;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import burlap.domain.singleagent.lunarlander.state.LLAgent;
-import burlap.domain.singleagent.lunarlander.state.LLBlock;
 import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.action.ActionType;
 import burlap.mdp.core.action.UniversalActionType;
 import burlap.mdp.core.oo.state.MutableOOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
-import burlap.mdp.core.Domain;
-import burlap.mdp.core.StateTransitionProb;
-import burlap.mdp.core.TerminalFunction;
-import burlap.mdp.core.state.MutableState;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.common.GoalBasedRF;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
-import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.model.SampleModel;
-import burlap.mdp.singleagent.model.statemodel.FullStateModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import edu.umbc.cs.forklift.state.FLAgent;
 import edu.umbc.cs.forklift.state.FLBlock;
 import edu.umbc.cs.forklift.state.FLBlock.FLWall;
 import edu.umbc.cs.forklift.state.FLState;
-import edu.umbc.cs.forklift.state.FLBlock;
 
 public class forklift implements DomainGenerator{
 
