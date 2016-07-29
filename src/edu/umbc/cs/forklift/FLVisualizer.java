@@ -14,8 +14,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -153,14 +151,12 @@ public class FLVisualizer {
 			
 			AffineTransform rot = new AffineTransform(); 
 			Rectangle r = g2.getDeviceConfiguration().getBounds();
-			System.out.println(r.getWidth() + " - " + r.getHeight());
 			rot.translate(r.getWidth() * (x + 1)/ forklift.xBound, r.getHeight() * (forklift.yBound - y - 1) / forklift.yBound);
 			rot.rotate(Math.toRadians(direction)); 
 			double cWidthSize = r.getWidth()/forklift.xBound;
 			double cHeightSize = r.getHeight()/forklift.yBound/2;
 			double scaleWidth = cWidthSize/img.getWidth();
 			double scaleHeight = cHeightSize/img.getHeight();
-//			System.out.println(cWidthSize + " - " + cHeightSize + " - " + scaleWidth + " - " + scaleHeight);
 			rot.scale(scaleWidth, scaleHeight);
 			rot.translate(-img.getWidth()/2,-img.getHeight()/2);
 			g2.drawImage(img, rot, this);
