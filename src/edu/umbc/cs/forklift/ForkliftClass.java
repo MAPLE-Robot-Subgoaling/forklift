@@ -29,10 +29,12 @@ public class ForkliftClass {
 		forklift gen = new forklift(goalArea);
 		SADomain domain = gen.generateDomain();
 		FLAgent agent = new FLAgent(1.1, 1.1, 0, 0, 0, 0, 1, 0.5,"agent");
+		
 		ArrayList<FLBlock> walls = new ArrayList<FLBlock>();
 		ArrayList<FLBlock> boxes = new ArrayList<FLBlock>(); 
 		FLBlock box = new FLBlock.FLBox(3, 3, .5, .5, "Boxer");
 		boxes.add(box);
+
 		ArrayList<Point2D.Double> gaps = new ArrayList<Point2D.Double>();
 		gaps.add(new Point2D.Double(5.0,10.0));
 		gaps.add(new Point2D.Double(4.0, 10.0)); 
@@ -51,6 +53,7 @@ public class ForkliftClass {
 		walls.addAll(GenerateRoom(10,19,0,10,gaps));
 		walls.addAll(GenerateRoom(10,19,10,19,gaps));
 		walls.addAll(GenerateRoom(0,10,10,19,gaps));
+
 		
 		FLState state = new FLState(agent, walls, boxes);
 		SimulatedEnvironment env = new SimulatedEnvironment(domain, state);
