@@ -1,5 +1,6 @@
 package edu.umbc.cs.forklift.state;
 
+import static edu.umbc.cs.forklift.forklift.CLASS_AREA;
 import static edu.umbc.cs.forklift.forklift.ATT_L;
 import static edu.umbc.cs.forklift.forklift.ATT_N;
 import static edu.umbc.cs.forklift.forklift.ATT_W;
@@ -28,7 +29,7 @@ public class FLArea implements ObjectInstance {
 		this.right = r;
 		this.top = t;
 		this.bot = b;
-		this.className = "temp_AREA";
+		this.className = CLASS_AREA;
 		this.name = name;
 		
 	}

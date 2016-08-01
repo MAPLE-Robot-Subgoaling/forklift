@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import burlap.domain.singleagent.frostbite.FrostbiteDomain.IglooBuiltPF;
 import burlap.domain.singleagent.lunarlander.LunarLanderDomain.OnPadPF;
 import burlap.domain.singleagent.lunarlander.LunarLanderDomain.TouchGroundPF;
 import burlap.domain.singleagent.lunarlander.LunarLanderDomain.TouchPadPF;
@@ -24,6 +25,7 @@ import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.model.SampleModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import edu.umbc.cs.forklift.state.FLAgent;
+import edu.umbc.cs.forklift.state.FLArea;
 import edu.umbc.cs.forklift.state.FLBlock;
 import edu.umbc.cs.forklift.state.FLBlock.FLBox;
 import edu.umbc.cs.forklift.state.FLBlock.FLWall;
@@ -54,6 +56,7 @@ public class forklift implements DomainGenerator{
 	public static final String CLASS_BLOCK = "block";
 	public static final String CLASS_WALL = "wall";
 	public static final String CLASS_BOX = "box";
+	public static final String CLASS_AREA = "area";
 	
 	public static final double xBound = 20;
 	public static final double yBound = 20;
@@ -72,9 +75,8 @@ public class forklift implements DomainGenerator{
 	
 	public static int captured = 0; 
 	
-	public forklift(List<Double> goalArea)
+	public forklift()
 	{
-		this.goalArea = goalArea;
 	}
 	public List<PropositionalFunction> generatePfs(){
 		return Arrays.asList(
@@ -324,7 +326,7 @@ public class forklift implements DomainGenerator{
 		}
 		
 	}
-	public class BoxInArea extends PropositionalFunction{
+	public static class BoxInArea extends PropositionalFunction{
 		public BoxInArea(String name){
 			super(name, new String[]{CLASS_BOX});
 		}
@@ -332,20 +334,21 @@ public class forklift implements DomainGenerator{
 		@Override
 		public boolean isTrue(OOState s, String... params) {
 			FLBlock.FLBox box = (FLBlock.FLBox)s.object(params[0]);
+			FLArea area = (FLArea)s.object("goal");
 			Double nearX = (Double)box.get(forklift.ATT_X);
 			Double farX = nearX+(Double)box.get(forklift.ATT_W);
 			Double nearY = (Double)box.get(forklift.ATT_Y);
 			Double farY = nearY+(Double)box.get(forklift.ATT_L);
 
-			if(farX < goalArea.get(0)||
-			   nearX > goalArea.get(1)||
-			   nearY < goalArea.get(2)||
-			   farY > goalArea.get(3))
+			if(nearX < (Double)area.get(0)||
+			   farX > (Double)area.get(1)||
+			   nearY < (Double)area.get(2)||
+			   farY > (Double)area.get(3))
 				return false;
 		return true;
 		}
 	}
-	public class BoxesInArea extends PropositionalFunction{
+	public static class BoxesInArea extends PropositionalFunction{
 		private BoxInArea pf;
 		public BoxesInArea(String name){
 			super(name, new String[]{CLASS_BOX});
@@ -363,41 +366,19 @@ public class forklift implements DomainGenerator{
 			return allInArea;
 		}
 	}
-//	public static class FLTF implements TerminalFunction
-//	{
-//		
-//		private ArrayList<FLState> Boxes;
-//		private List<Double> goal;
-//		
-//		public FLTF(ArrayList<FLState> Boxes, List<Double> goal)
-//		{
-//			this.Boxes = Boxes;
-//			this.goal = goal;
-//		}
-//		public boolean isTerminal(State s) {
-//			for(FLState b: Boxes)
-//			{
-//				if((Double)b.get(forklift.ATT_X) < goal.get(0))
-//				{
-//					return false;
-//				}
-//				else if((Double)b.get(forklift.ATT_X) > goal.get(1))
-//				{
-//					return false;
-//				}
-//				else if((Double)b.get(forklift.ATT_Y) < goal.get(2))
-//				{
-//					return false;
-//				}
-//				else if((Double)b.get(forklift.ATT_Y) > goal.get(3))
-//				{
-//					return false;
-//				}
-//			}
-//			return true;
-//		}
-//		
-//	}
+	public static class FLTF implements TerminalFunction
+	{
+		
+		private BoxesInArea pf;
+		public FLTF()
+		{
+		pf = new BoxesInArea("prop");
+		}
+		public boolean isTerminal(State s) {
+			return pf.isTrue((OOState)s);
+		}
+		
+	}
 //	
 //	public static class FLRF implements TerminalFunction
 //	{

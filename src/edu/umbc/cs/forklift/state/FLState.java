@@ -20,6 +20,7 @@ public class FLState implements MutableOOState{
 	FLAgent agent;
 	List <FLBlock> walls;
 	List <FLBlock> boxes;
+	FLArea goal;
 
 	private static final List<Object> keys = Arrays.<Object>asList(CLASS_AGENT,CLASS_WALL,CLASS_BOX);
 	
@@ -37,8 +38,12 @@ public class FLState implements MutableOOState{
 		this(agent, walls);
 		this.boxes = boxes;
 	}
+	public FLState(FLAgent agent, List<FLBlock> walls, List <FLBlock> boxes, FLArea goal){
+		this(agent, walls, boxes);
+		this.goal = goal;
+	}
 	public FLState copy() {
-		return new FLState(agent, walls, boxes);
+		return new FLState(agent, walls, boxes, goal);
 	}
 	
 	public List<Object> variableKeys() {
@@ -51,12 +56,14 @@ public class FLState implements MutableOOState{
 
 	//TODO when FLState is more object oriented, fill these out
 	public int numObjects() {
-		return 1 + walls.size()+boxes.size();
+		return 2 + walls.size()+boxes.size();
 	}
 
 	public ObjectInstance object(String s) {
 		if(agent.name().equals(s))
 			return agent;
+		else if(goal.name().equals(s))
+			return goal;
 		else{
 			for(FLBlock w: walls)
 				if(w.name().equals(s))
@@ -71,6 +78,7 @@ public class FLState implements MutableOOState{
 	public List<ObjectInstance> objects() {
 		List<ObjectInstance> obj = new ArrayList<ObjectInstance>();
 		obj.add(agent);
+		obj.add(goal);
 		for(FLBlock w: walls)
 			obj.add(w);
 		for(FLBlock b: boxes)
@@ -82,6 +90,8 @@ public class FLState implements MutableOOState{
 		List<ObjectInstance> ooc = new ArrayList<ObjectInstance>();
 		if(s.equals(CLASS_AGENT))
 			ooc.add(agent);
+		else if(s.equals(CLASS_AREA))
+			ooc.add(goal);
 		else if(s.equals(CLASS_WALL))
 			for(FLBlock w: walls)
 				ooc.add(w);
@@ -91,9 +101,12 @@ public class FLState implements MutableOOState{
 		return ooc;
 	}
 
+	//note: addObject agent or area replaces, not adds
 	public MutableOOState addObject(ObjectInstance o) {
 		if(o instanceof FLAgent)
 			agent = (FLAgent)o;
+		else if(o instanceof FLArea)
+			goal = (FLArea)o;
 		else if(o instanceof FLWall)
 			walls.add((FLWall)o);
 		else if(o instanceof FLBox)
@@ -106,7 +119,9 @@ public class FLState implements MutableOOState{
 
 	public MutableOOState removeObject(String s) {
 		if(agent.name().equals(s))
-			agent = new FLAgent(); //cannot remove, so copy over with blank slate
+			agent = new FLAgent();//cannot remove, so copy over with blank slate
+		else if(goal.name().equals(s))
+			goal = null;//this might/will cause problems
 		else{
 			//use fancy iterator as list modification occurs
 			for(java.util.Iterator<FLBlock> iterator = walls.iterator(); iterator.hasNext();)
@@ -130,6 +145,8 @@ public class FLState implements MutableOOState{
 	public Object get(Object key) {
 		if(key.equals(CLASS_AGENT))
 			return agent;
+		else if(key.equals(CLASS_AREA))
+			return goal;
 		else if(key.equals(CLASS_WALL))
 			return walls;
 		else if(key.equals(CLASS_BOX))
@@ -140,6 +157,8 @@ public class FLState implements MutableOOState{
 	public MutableState set(Object key, Object value) {
 		if(key.equals(CLASS_AGENT))
 			agent = (FLAgent) value;
+		else if(key.equals(CLASS_AREA))
+			goal = (FLArea) goal;
 		else if(key.equals(CLASS_WALL))
 			walls = (List<FLBlock>) value;
 		else if(key.equals(CLASS_BOX))
