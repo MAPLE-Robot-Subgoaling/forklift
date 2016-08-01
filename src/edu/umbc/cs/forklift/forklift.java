@@ -56,8 +56,8 @@ public class forklift implements DomainGenerator{
 	public static final String CLASS_WALL = "wall";
 	public static final String CLASS_BOX = "box";
 	
-	public static final double xBound = 20;
-	public static final double yBound = 20;
+	public static final double xBound = 40;
+	public static final double yBound = 40;
 	
 	protected RewardFunction rf;
 	protected TerminalFunction tf;
@@ -66,7 +66,7 @@ public class forklift implements DomainGenerator{
 	static double rotAccel = 2;
 	static double friction = .01;
 	static double rotFriction = 1;
-	static double brakeFriction = .2;
+	static double brakeFriction = .4;
 	static double brakeRotFriction = 10;
 	
 	public List<Double> goalArea; //xmin,xmax,ymin,ymax
@@ -235,6 +235,7 @@ public class forklift implements DomainGenerator{
 				fric = brakeFriction;
 				rfric=brakeRotFriction;
 			}
+			
 				
 				
 			//calculate acceleration based on input
