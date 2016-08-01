@@ -146,15 +146,19 @@ public class FLVisualizer {
 		{
 			double x = (Double) ob.get(forklift.ATT_X);
 			double y = (Double) ob.get(forklift.ATT_Y);
+			double w = (Double) ob.get(forklift.ATT_W);
+			double l = (Double) ob.get(forklift.ATT_L);
 			double direction = (Double)ob.get(forklift.ATT_D);
 			
+			System.out.println(x + " " + y + " " + w + " " + l);
 			
 			AffineTransform rot = new AffineTransform(); 
 			Rectangle r = g2.getDeviceConfiguration().getBounds();
-			rot.translate(r.getWidth() * (x + 1)/ forklift.xBound, r.getHeight() * (forklift.yBound - y - 1) / forklift.yBound);
+			System.out.println(r.getX() + " " + r.getY() + " " + r.getWidth()+ " " + r.getHeight());
+			rot.translate(r.getWidth() * (x + w/2)/ (forklift.xBound), r.getHeight() * (forklift.yBound - y - l/2) / (forklift.yBound));
 			rot.rotate(Math.toRadians(direction)); 
-			double cWidthSize = r.getWidth()/forklift.xBound;
-			double cHeightSize = r.getHeight()/forklift.yBound/2;
+			double cWidthSize = r.getWidth()/forklift.xBound * w;
+			double cHeightSize = r.getHeight()/forklift.yBound * l;
 			double scaleWidth = cWidthSize/img.getWidth();
 			double scaleHeight = cHeightSize/img.getHeight();
 			rot.scale(scaleWidth, scaleHeight);

@@ -1,5 +1,6 @@
 package edu.umbc.cs.forklift;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,8 +59,8 @@ public class forklift implements DomainGenerator{
 	public static final String CLASS_BOX = "box";
 	public static final String CLASS_AREA = "area";
 	
-	public static final double xBound = 20;
-	public static final double yBound = 20;
+	public static final double xBound = 40;
+	public static final double yBound = 40;
 	
 	protected RewardFunction rf;
 	protected TerminalFunction tf;
@@ -68,7 +69,7 @@ public class forklift implements DomainGenerator{
 	static double rotAccel = 2;
 	static double friction = .01;
 	static double rotFriction = 1;
-	static double brakeFriction = .2;
+	static double brakeFriction = .4;
 	static double brakeRotFriction = 10;
 	
 	public List<Double> goalArea; //xmin,xmax,ymin,ymax
@@ -226,16 +227,17 @@ public class forklift implements DomainGenerator{
 			}else if(actionName.startsWith(PREFIX_ACCEL)){
 				if(actionName.equals(MOVE_FORWARD)){
 					realForwardAccel+=forwardAcceleration;
-					System.out.println(realForwardAccel);
+					//System.out.println(realForwardAccel);
 				}
 				else if(actionName.equals(MOVE_BACKWARD)){
 					realForwardAccel-=backwardAcceleration;
-					System.out.println(realForwardAccel);
+					//System.out.println(realForwardAccel);
 				}
 			}else if(actionName.equals("BRAKE")){
 				fric = brakeFriction;
 				rfric=brakeRotFriction;
 			}
+			
 				
 				
 			//calculate acceleration based on input
@@ -273,13 +275,13 @@ public class forklift implements DomainGenerator{
 			double npy = py+vy;
 			
 			if(collisionCheck(s, npx, npy, w, l) == false){
-				FLAgent newAgent = new FLAgent(npx, npy, vx, vy, vr, direction,w,l,"agent");
+				FLAgent newAgent = new FLAgent(npx, npy, vx, vy, vr, direction,l,w,"agent");
 				((MutableOOState) s).set(CLASS_AGENT, newAgent);
 			}
 				else{
 					//if collision, zero all velocities and revert to previous position
 					//TODO: is it possible to store a previous state's position and jump further backwards? 
-					FLAgent newAgent = new FLAgent(px, py, direction,w,l,"agent");
+					FLAgent newAgent = new FLAgent(px, py, direction,l,w,"agent");
 				((MutableOOState) s).set(CLASS_AGENT, newAgent);
 				}
 			return s;
@@ -302,25 +304,18 @@ public class forklift implements DomainGenerator{
 			blocks.addAll(((MutableOOState) s).objectsOfClass(CLASS_BOX));
 			for(ObjectInstance block: blocks)
 			{
-				if((x >= (Double)block.get(ATT_X) && 
-					x <= (Double)block.get(ATT_X) + (Double)block.get(ATT_W) &&
-					y >= (Double)block.get(ATT_Y) &&
-					y <= (Double)block.get(ATT_Y) + (Double)block.get(ATT_L))||
-					(x >= (Double)block.get(ATT_X) && 
-					x <= (Double)block.get(ATT_X) + (Double)block.get(ATT_W) &&
-					y + l >= (Double)block.get(ATT_Y) &&
-					y + l <= (Double)block.get(ATT_Y) + (Double)block.get(ATT_L))||
-					(x + w >= (Double)block.get(ATT_X) && 
-					x + w <= (Double)block.get(ATT_X) + (Double)block.get(ATT_W) &&
-					y >= (Double)block.get(ATT_Y) &&
-					y <= (Double)block.get(ATT_Y) + (Double)block.get(ATT_L))||
-					(x + w >= (Double)block.get(ATT_X) && 
-					x + w <= (Double)block.get(ATT_X) + (Double)block.get(ATT_W) &&
-					y + l >= (Double)block.get(ATT_Y) &&
-					y + l <= (Double)block.get(ATT_Y) + (Double)block.get(ATT_L))
-						){
-					return true;
-				}
+				Rectangle b = new Rectangle();
+				b.setRect((Double)block.get(ATT_X),(Double)block.get(ATT_Y), (Double)block.get(ATT_W), (Double)block.get(ATT_L));
+				Rectangle f = new Rectangle();
+				f.setRect(x, y, w, l);
+				
+				if (f.x < b.x + b.width &&
+						   f.x + f.width > b.x &&
+						   f.y < b.y + b.height &&
+						   f.height + f.y > b.y) {
+							return true;
+						}
+				
 			}
 			return false;
 		}

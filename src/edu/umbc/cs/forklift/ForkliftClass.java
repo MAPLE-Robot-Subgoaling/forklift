@@ -20,7 +20,7 @@ public class ForkliftClass {
 
 		forklift gen = new forklift();
 		SADomain domain = gen.generateDomain();
-		FLAgent agent = new FLAgent(1.1, 1.1, 0, 0, 0, 0, 1, 0.5,"agent");
+		FLAgent agent = new FLAgent(1.0, 1.0, 0, 0, 0, 0, 1, 2,"agent");
 		
 		ArrayList<FLBlock> walls = new ArrayList<FLBlock>();
 		ArrayList<FLBlock> boxes = new ArrayList<FLBlock>(); 
@@ -28,23 +28,23 @@ public class ForkliftClass {
 		boxes.add(box);
 
 		ArrayList<Point2D.Double> gaps = new ArrayList<Point2D.Double>();
-		gaps.add(new Point2D.Double(5.0,10.0));
-		gaps.add(new Point2D.Double(4.0, 10.0)); 
-		gaps.add(new Point2D.Double(6.0, 10.0)); 
-		gaps.add(new Point2D.Double(10.0, 5.0)); 
-		gaps.add(new Point2D.Double(4.0, 10.0)); 
-		gaps.add(new Point2D.Double(10.0, 6.0)); 
-		gaps.add(new Point2D.Double(15.0, 10.0)); 
-		gaps.add(new Point2D.Double(14.0, 10.0)); 
-		gaps.add(new Point2D.Double(16.0, 10.0)); 
-		gaps.add(new Point2D.Double(10.0, 15.0)); 
-		gaps.add(new Point2D.Double(10.0, 14.0)); 
-		gaps.add(new Point2D.Double(10.0, 16.0)); 
+		gaps.add(new Point2D.Double(10.0,20.0));
+		gaps.add(new Point2D.Double(9.0, 20.0)); 
+		gaps.add(new Point2D.Double(11.0, 20.0)); 
+		gaps.add(new Point2D.Double(20.0, 10.0)); 
+		gaps.add(new Point2D.Double(20.0, 9.0)); 
+		gaps.add(new Point2D.Double(20.0, 11.0)); 
+		gaps.add(new Point2D.Double(30.0, 20.0)); 
+		gaps.add(new Point2D.Double(29.0, 20.0)); 
+		gaps.add(new Point2D.Double(31.0, 20.0)); 
+		gaps.add(new Point2D.Double(20.0, 30.0)); 
+		gaps.add(new Point2D.Double(20.0, 29.0)); 
+		gaps.add(new Point2D.Double(20.0, 31.0)); 
 
-		walls.addAll(GenerateRoom(0,10,0,10,gaps));
-		walls.addAll(GenerateRoom(10,19,0,10,gaps));
-		walls.addAll(GenerateRoom(10,19,10,19,gaps));
-		walls.addAll(GenerateRoom(0,10,10,19,gaps));
+		walls.addAll(GenerateRoom(0,20,0,20,gaps));
+		walls.addAll(GenerateRoom(20,39,0,20,gaps));
+		walls.addAll(GenerateRoom(20,39,20,39,gaps));
+		walls.addAll(GenerateRoom(0,20,20,39,gaps));
 
 		FLArea goalArea = new FLArea(12.0,24.0,38.0,19.0, "goal");
 
@@ -62,6 +62,7 @@ public class ForkliftClass {
 		exp.addKeyAction("d", forklift.ROTATE_CLOCKWISE, "");
 		exp.addKeyAction("a", forklift.ROTATE_COUNTERCLOCKWISE, "");
 		exp.addKeyAction(" ", forklift.BRAKE, "");
+		exp.addKeyAction("x", forklift.IDLE, "");
 
 		exp.initGUI();
 
