@@ -49,7 +49,7 @@ public class ForkliftClass {
 		FLArea goalArea = new FLArea(12.0,24.0,38.0,19.0, "goal");
 
 
-		FLState state = new FLState(agent, walls, boxes);
+		FLState state = new FLState(agent, walls, boxes, goalArea);
 		SimulatedEnvironment env = new SimulatedEnvironment(domain, state);
 
 		FLVisualizer flv = new FLVisualizer();

@@ -5,11 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import burlap.domain.singleagent.frostbite.FrostbiteDomain.IglooBuiltPF;
-import burlap.domain.singleagent.lunarlander.LunarLanderDomain.OnPadPF;
-import burlap.domain.singleagent.lunarlander.LunarLanderDomain.TouchGroundPF;
-import burlap.domain.singleagent.lunarlander.LunarLanderDomain.TouchPadPF;
-import burlap.domain.singleagent.lunarlander.LunarLanderDomain.TouchSurfacePF;
 import burlap.mdp.auxiliary.DomainGenerator;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.action.Action;
@@ -69,7 +64,7 @@ public class forklift implements DomainGenerator{
 	static double rotAccel = 2;
 	static double friction = .01;
 	static double rotFriction = 1;
-	static double brakeFriction = .4;
+	static double brakeFriction = .05;
 	static double brakeRotFriction = 10;
 	
 	public List<Double> goalArea; //xmin,xmax,ymin,ymax
@@ -233,7 +228,7 @@ public class forklift implements DomainGenerator{
 					realForwardAccel-=backwardAcceleration;
 					//System.out.println(realForwardAccel);
 				}
-			}else if(actionName.equals("BRAKE")){
+			}else if(actionName.equals(BRAKE)){
 				fric = brakeFriction;
 				rfric=brakeRotFriction;
 			}
