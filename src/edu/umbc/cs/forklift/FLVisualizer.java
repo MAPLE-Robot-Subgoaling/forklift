@@ -99,7 +99,7 @@ public class FLVisualizer {
 
 		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) 
 		{
-			if(imgPath.equals("none"))
+			if(imgPath.equals("none") && (Boolean)ob.get(forklift.ATT_O))
 			{
 				g2.setColor(Color.RED);
 				
@@ -113,10 +113,6 @@ public class FLVisualizer {
 				double ry = cHeight - height - y * height;
 				
 				g2.fill(new Rectangle2D.Double(rx, ry, width, height));
-			}
-			else
-			{
-				
 			}
 		}
 	}

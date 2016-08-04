@@ -1,6 +1,8 @@
 package edu.umbc.cs.forklift;
 
 import java.awt.Rectangle;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,6 +45,7 @@ public class forklift implements DomainGenerator{
 	public static final String ATT_W = "w";
 	public static final String ATT_N = "n";
 	public static final String ATT_B = "b";
+	public static final String ATT_O = "o";
 	public static final String PREFIX_ACCEL = "A_";
 	public static final String PREFIX_ROTATE_ACCEL = "AR_";
 	public static final String MOVE_FORWARD = PREFIX_ACCEL+"forward";
@@ -110,9 +113,9 @@ public class forklift implements DomainGenerator{
 		OOSADomain domain = new OOSADomain();
 		
 		FLModel fmodel = new FLModel(forwardAccel, backwardAccel, rotAccel);
-		FactoredModel factorModel = new FactoredModel((SampleStateModel)fmodel, rf, tf);
 		tf = new FLTF();
 		rf = new SingleGoalPFRF(new BoxesInArea("rewardpf"));
+		FactoredModel factorModel = new FactoredModel((SampleStateModel)fmodel, rf, tf);
 		
 		domain.setModel(factorModel);
 		
@@ -238,8 +241,16 @@ public class forklift implements DomainGenerator{
 				fric = brakeFriction;
 				rfric=brakeRotFriction;
 			}else if(actionName.equals(DROP)){
+				b.putDown();
 				b = null;				
-			}				
+			}
+			else if(actionName.equals(PICKUP))
+			{
+				if(vx == 0 && vy == 0 && vr == 0)
+				{
+					
+				}
+			}
 				
 			//calculate acceleration based on input
 			//friction is modeled as an acceleration
@@ -275,7 +286,7 @@ public class forklift implements DomainGenerator{
 			double npx = px+vx;
 			double npy = py+vy;
 			
-			if(collisionCheck(s, npx, npy, w, l) == false){
+			if(collisionCheck(s, npx, npy, w, l, direction) == false){
 				FLAgent newAgent = new FLAgent(npx, npy, vx, vy, vr, direction, l, w, "agent", (FLBox)agent.get(ATT_B));
 				((MutableOOState) s).set(CLASS_AGENT, newAgent);
 			}
@@ -297,13 +308,13 @@ public class forklift implements DomainGenerator{
 			return false;
 		}
 		
-		public boolean collisionCheck(State s, double x, double y, double w, double l)
+		public boolean collisionCheck(State s, double x, double y, double w, double l, double direction)
 		{
 			List<ObjectInstance> blocks =  ((MutableOOState) s).objectsOfClass(CLASS_WALL);
 			blocks.addAll(((MutableOOState) s).objectsOfClass(CLASS_BOX));
 			for(ObjectInstance block: blocks)
 			{
-				Rectangle b = new Rectangle();
+				/*Rectangle b = new Rectangle();
 				b.setRect((Double)block.get(ATT_X),(Double)block.get(ATT_Y), (Double)block.get(ATT_W), (Double)block.get(ATT_L));
 				Rectangle f = new Rectangle();
 				f.setRect(x, y, w, l);
@@ -314,9 +325,45 @@ public class forklift implements DomainGenerator{
 						   f.height + f.y > b.y) {
 							return true;
 						}
-				
+				*/
+				double blockX = (Double)block.get(ATT_X);
+				double blockY = (Double)block.get(ATT_Y);
+				double blockW = (Double)block.get(ATT_W);
+				double blockL = (Double)block.get(ATT_L);
+				ArrayList<Line2D.Double> test = new ArrayList<Line2D.Double>(); 
+				Double x1, x2, x3, x4, y1, y2, y3, y4;
+				x1 = x;
+				y1 = y;
+				x2 = (Double)(x + Math.cos(Math.toRadians(360-direction)) * w);
+				y2 = (Double)(y + Math.sin(Math.toRadians(360-direction)) * l);
+				x3 = (Double)(x + Math.sin(Math.toRadians(360-direction)) * w);
+				y3 = (Double)(y + Math.cos(Math.toRadians(360-direction)) * l);
+				x4 = (Double)(x3 + Math.cos(Math.toRadians(360-direction)) * w);
+				y4 = (Double)(y3 + Math.sin(Math.toRadians(360-direction)) * l);
+				test.add(new Line2D.Double(x, y, x2, y2));
+				test.add(new Line2D.Double(x, y, x3, y2));
+				test.add(new Line2D.Double(x2, y2, x4, x4));
+				test.add(new Line2D.Double(x3, y3, x4, x4));
 			}
 			return false;
+		}
+		
+		public FLBox pickup(State s, double x, double y, double w, double l){
+			List<ObjectInstance> boxes = ((MutableOOState)s).objectsOfClass(CLASS_BOX);
+			for(ObjectInstance box: boxes)
+			{
+				Rectangle b = new Rectangle();
+				b.setRect((Double)box.get(ATT_X),(Double)box.get(ATT_Y), (Double)box.get(ATT_W), (Double)box.get(ATT_L));
+				Rectangle f = new Rectangle();
+				f.setRect(x, y, w, l);
+				
+				if (f.x < b.x + b.width &&
+						   f.x + f.width > b.x)
+				{
+					
+				}
+			}
+			return null;
 		}
 		
 	}

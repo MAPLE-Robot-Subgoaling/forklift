@@ -5,6 +5,7 @@ import static edu.umbc.cs.forklift.forklift.ATT_N;
 import static edu.umbc.cs.forklift.forklift.ATT_W;
 import static edu.umbc.cs.forklift.forklift.ATT_X;
 import static edu.umbc.cs.forklift.forklift.ATT_Y;
+import static edu.umbc.cs.forklift.forklift.ATT_O;
 
 import static edu.umbc.cs.forklift.forklift.CLASS_WALL;
 import static edu.umbc.cs.forklift.forklift.CLASS_BOX;
@@ -24,7 +25,7 @@ public class FLBlock implements ObjectInstance {
 	private String name;
 	private static String className;
 	
-	private static final List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_W, ATT_L, ATT_N);
+	private static final List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_W, ATT_L, ATT_N, ATT_O);
 	
 	public FLBlock(double x, double y, double yLength, double xWidth, String name) {
 		this.x = x;
@@ -111,7 +112,25 @@ public class FLBlock implements ObjectInstance {
 			return true;
 		}
 		
-		
+		public Object get(Object variableKey) {
+			if(variableKey instanceof String)
+				if(variableKey.equals(ATT_O))
+					return onGround;
+				else
+					return super.get(variableKey);
+			else if(variableKey instanceof Integer){
+				switch((Integer)variableKey){
+					case 0:	return super.get(variableKey);
+					case 1:	return super.get(variableKey);
+					case 2: return super.get(variableKey);
+					case 3: return super.get(variableKey);
+					case 4: return super.get(variableKey);
+					case 5: return onGround;
+					default: throw new RuntimeException("Unknown key " + variableKey);
+				}
+			}	
+			throw new RuntimeException("Unknown key " + variableKey);		
+		}
 	}
 	public static class FLWall extends FLBlock{
 

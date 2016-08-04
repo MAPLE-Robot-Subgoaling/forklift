@@ -9,6 +9,7 @@ import static edu.umbc.cs.forklift.forklift.ATT_Y;
 import static edu.umbc.cs.forklift.forklift.ATT_VX;
 import static edu.umbc.cs.forklift.forklift.ATT_VY;
 import static edu.umbc.cs.forklift.forklift.ATT_VR;
+import static edu.umbc.cs.forklift.forklift.ATT_B;
 import static edu.umbc.cs.forklift.forklift.CLASS_AGENT;
 
 import java.util.Arrays;
@@ -36,7 +37,7 @@ public class FLAgent implements ObjectInstance {
 						  ATT_VX, ATT_VY, ATT_VR,
 						  ATT_D,
 						  ATT_W, ATT_L, 
-						  ATT_N);
+						  ATT_N, ATT_B);
 	
 	public FLAgent()
 	{
@@ -84,6 +85,7 @@ public class FLAgent implements ObjectInstance {
 				case 6: xWidth = (Double) v;
 				case 7: yLength = (Double) v;
 				case 8: name = (String) v;
+				case 9: grabbed = (FLBox)v;
 				default: throw new RuntimeException("Unknown key " + variableKey);
 			}
 		//if key is not string or integer
@@ -109,6 +111,7 @@ public class FLAgent implements ObjectInstance {
 					case 6: return xWidth;
 					case 7: return yLength;
 					case 8: return name;
+					case 9: return grabbed;
 					default: throw new RuntimeException("Unknown key " + variableKey);
 				}
 		//if key is not string or integer
