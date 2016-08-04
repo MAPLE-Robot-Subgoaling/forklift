@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.action.ActionType;
@@ -16,9 +17,12 @@ import burlap.mdp.core.oo.state.OOState;
 import burlap.mdp.core.oo.state.ObjectInstance;
 import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.common.GoalBasedRF;
+import burlap.mdp.singleagent.common.SingleGoalPFRF;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import burlap.mdp.singleagent.model.FactoredModel;
 import burlap.mdp.singleagent.model.RewardFunction;
 import burlap.mdp.singleagent.model.SampleModel;
+import burlap.mdp.singleagent.model.statemodel.SampleStateModel;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import edu.umbc.cs.forklift.state.FLAgent;
 import edu.umbc.cs.forklift.state.FLArea;
@@ -106,11 +110,11 @@ public class forklift implements DomainGenerator{
 		OOSADomain domain = new OOSADomain();
 		
 		FLModel fmodel = new FLModel(forwardAccel, backwardAccel, rotAccel);
+		FactoredModel factorModel = new FactoredModel((SampleStateModel)fmodel, rf, tf);
+		tf = new FLTF();
+		rf = new SingleGoalPFRF(new BoxesInArea("rewardpf"));
 		
-//		tf = new FLTF(Boxes, goalArea);
-//		rf = new GoalBasedRF(new FLRF(Boxes, goalArea), 1, 0);
-		
-		domain.setModel(fmodel);
+		domain.setModel(factorModel);
 		
 		domain.addActionTypes(new UniversalActionType(MOVE_FORWARD), 
 				new UniversalActionType(MOVE_BACKWARD),
@@ -182,7 +186,7 @@ public class forklift implements DomainGenerator{
 //		
 //	}
 	
-	public static class FLModel implements SampleModel
+	public static class FLModel implements SampleStateModel
 	{
 		double forwardAcceleration;
 		double backwardAcceleration;
@@ -284,11 +288,9 @@ public class forklift implements DomainGenerator{
 			return s;
 		}
 
-		public EnvironmentOutcome sample(State s, Action a) {
+		public State sample(State s, Action a) {
 			s = s.copy();
-			//what is this?
-			//State next = move(s,a);
-			return new EnvironmentOutcome(s, a, move(s, a), -1, false);
+			return move(s, a);
 		}
 
 		public boolean terminal(State s) {
@@ -371,38 +373,32 @@ public class forklift implements DomainGenerator{
 		}
 		
 	}
-//	
-//	public static class FLRF implements TerminalFunction
+	
+//	public static class FLRF implements RewardFunction
 //	{
-//		private ArrayList<FLState> Boxes;
-//		private List<Double> goal;
 //		
-//		public FLRF(ArrayList<FLState> Boxes, List<Double> goal)
+//		public FLRF()
 //		{
-//			this.Boxes = Boxes;
-//			this.goal = goal;
 //		}
 //		
-//		public boolean isTerminal(State arg0) {
+//
+//		public double reward(State s, Action a, State sprime) {
+//			FLArea goal = (FLArea)s.get("goal");
+//			ArrayList<FLBox> boxes = (ArrayList<FLBox>)s.get(CLASS_BOX); 
 //			int captured = 0;
-//			for(FLState b: Boxes)
+//			for(FLBox b: boxes)
 //			{
-//				if((Double)b.get(forklift.ATT_X) > goal.get(0) && 
-//						(Double)b.get(forklift.ATT_X) < goal.get(1) &&
-//						(Double)b.get(forklift.ATT_Y) > goal.get(2) &&
-//						(Double)b.get(forklift.ATT_Y) < goal.get(3)){
+//				if((Double)b.get(forklift.ATT_X) >(Double) goal.get(0) && 
+//						(Double)b.get(forklift.ATT_X) <(Double) goal.get(1) &&
+//						(Double)b.get(forklift.ATT_Y) >(Double) goal.get(2) &&
+//						(Double)b.get(forklift.ATT_Y) <(Double) goal.get(3)){
 //					captured++;
 //				}
 //			}
-//			if(captured > forklift.captured)
-//			{
-//				forklift.captured = captured;
-//				return true;
-//			}
-//			return false;
+//			return captured;
 //		}
 //		
 //	}
-//	
-//	
+	
+	
 }

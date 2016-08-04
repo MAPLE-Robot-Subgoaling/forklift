@@ -65,7 +65,7 @@ public class ForkliftClass {
 		exp.addKeyAction("x", forklift.IDLE, "");
 
 		exp.initGUI();
-
+		
 	}
 	
 	//preconditions: x1 < x2 and y1 < y2
