@@ -16,6 +16,7 @@ import java.util.List;
 
 import burlap.mdp.core.oo.state.OOStateUtilities;
 import burlap.mdp.core.oo.state.ObjectInstance;
+import edu.umbc.cs.forklift.state.FLBlock.FLBox;
 
 public class FLAgent implements ObjectInstance {
 
@@ -28,6 +29,7 @@ public class FLAgent implements ObjectInstance {
 	private double vy;
 	private double vr;
 	private String name;
+	private FLBox grabbed;
 	
 	private static final List<Object> keys = 
 	Arrays.<Object>asList(ATT_X, ATT_Y, 
@@ -41,7 +43,7 @@ public class FLAgent implements ObjectInstance {
 		
 	}
 	
-	public FLAgent(double x, double y, double vx, double vy, double vr, double direction, double yLength, double xWidth, String name)	
+	public FLAgent(double x, double y, double vx, double vy, double vr, double direction, double yLength, double xWidth, String name, FLBox grabbed)	
 	{
 		this.x = x;
 		this.y = y;
@@ -52,13 +54,14 @@ public class FLAgent implements ObjectInstance {
 		this.yLength = yLength;
 		this.xWidth = xWidth;
 		this.name = name;
+		this.grabbed = grabbed;
 	}
-	public FLAgent(double x, double y, double direction, double yLength, double xWidth, String name){
-		this(x,y,0,0,0,direction,yLength,xWidth,name);
+	public FLAgent(double x, double y, double direction, double yLength, double xWidth, String name, FLBox grabbed){
+		this(x,y,0,0,0,direction,yLength,xWidth,name, grabbed);
 	}
 
 	public FLAgent copy() {
-		return new FLAgent(x, y, vx, vy, vr, direction, yLength, xWidth, name);
+		return new FLAgent(x, y, vx, vy, vr, direction, yLength, xWidth, name, grabbed);
 	}
 
 	public void set(Object variableKey, Object v)

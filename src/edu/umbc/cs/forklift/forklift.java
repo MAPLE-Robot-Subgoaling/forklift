@@ -38,6 +38,7 @@ public class forklift implements DomainGenerator{
 	public static final String ATT_L = "l";
 	public static final String ATT_W = "w";
 	public static final String ATT_N = "n";
+	public static final String ATT_B = "b";
 	public static final String PREFIX_ACCEL = "A_";
 	public static final String PREFIX_ROTATE_ACCEL = "AR_";
 	public static final String MOVE_FORWARD = PREFIX_ACCEL+"forward";
@@ -209,6 +210,7 @@ public class forklift implements DomainGenerator{
 			double vr = (Double)agent.get(ATT_VR);
 			double w = (Double)agent.get(ATT_W);
 			double l = (Double)agent.get(ATT_L);
+			FLBox b = (FLBox)agent.get(ATT_B);
 			
 			String actionName = a.actionName();
 			//check for new acceleration actions
@@ -231,9 +233,9 @@ public class forklift implements DomainGenerator{
 			}else if(actionName.equals(BRAKE)){
 				fric = brakeFriction;
 				rfric=brakeRotFriction;
-			}
-			
-				
+			}else if(actionName.equals(DROP)){
+				b = null;				
+			}				
 				
 			//calculate acceleration based on input
 			//friction is modeled as an acceleration
@@ -270,15 +272,15 @@ public class forklift implements DomainGenerator{
 			double npy = py+vy;
 			
 			if(collisionCheck(s, npx, npy, w, l) == false){
-				FLAgent newAgent = new FLAgent(npx, npy, vx, vy, vr, direction,l,w,"agent");
+				FLAgent newAgent = new FLAgent(npx, npy, vx, vy, vr, direction, l, w, "agent", (FLBox)agent.get(ATT_B));
 				((MutableOOState) s).set(CLASS_AGENT, newAgent);
 			}
-				else{
-					//if collision, zero all velocities and revert to previous position
-					//TODO: is it possible to store a previous state's position and jump further backwards? 
-					FLAgent newAgent = new FLAgent(px, py, direction,l,w,"agent");
+			else{
+				//if collision, zero all velocities and revert to previous position
+				//TODO: is it possible to store a previous state's position and jump further backwards? 
+				FLAgent newAgent = new FLAgent(px, py, direction, l, w, "agent", (FLBox)agent.get(ATT_B));
 				((MutableOOState) s).set(CLASS_AGENT, newAgent);
-				}
+			}
 			return s;
 		}
 

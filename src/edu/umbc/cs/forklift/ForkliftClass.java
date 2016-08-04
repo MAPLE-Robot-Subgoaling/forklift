@@ -20,7 +20,7 @@ public class ForkliftClass {
 
 		forklift gen = new forklift();
 		SADomain domain = gen.generateDomain();
-		FLAgent agent = new FLAgent(1.0, 1.0, 0, 0, 0, 0, 1, 2,"agent");
+		FLAgent agent = new FLAgent(1.0, 1.0, 0, 0, 0, 0, 1, 2,"agent", null);
 		
 		ArrayList<FLBlock> walls = new ArrayList<FLBlock>();
 		ArrayList<FLBlock> boxes = new ArrayList<FLBlock>(); 
