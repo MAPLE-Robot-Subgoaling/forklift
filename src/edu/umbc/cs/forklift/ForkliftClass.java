@@ -20,11 +20,11 @@ public class ForkliftClass {
 
 		forklift gen = new forklift();
 		SADomain domain = gen.generateDomain();
-		FLAgent agent = new FLAgent(1.0, 1.0, 0, 0, 0, 0, 1, 2,"agent", null);
+		FLAgent agent = new FLAgent(1.1, 1.1, 0, 0, 0, 0, 1, 2,"agent", null);
 		
 		ArrayList<FLBlock> walls = new ArrayList<FLBlock>();
 		ArrayList<FLBlock> boxes = new ArrayList<FLBlock>(); 
-		FLBlock box = new FLBlock.FLBox(3, 3, .5, .5, "Boxer");
+		FLBlock box = new FLBlock.FLBox(30.0, 10.0, 2, 2, "Boxer");
 		boxes.add(box);
 
 		ArrayList<Point2D.Double> gaps = new ArrayList<Point2D.Double>();
@@ -46,7 +46,7 @@ public class ForkliftClass {
 		walls.addAll(GenerateRoom(20,39,20,39,gaps));
 		walls.addAll(GenerateRoom(0,20,20,39,gaps));
 
-		FLArea goalArea = new FLArea(12.0,24.0,38.0,19.0, "goal");
+		FLArea goalArea = new FLArea(20.0, 39.0, 20.0, 0.0, "goal");
 
 
 		FLState state = new FLState(agent, walls, boxes, goalArea);
