@@ -8,11 +8,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.auxiliary.common.SinglePFTF;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.core.TerminalFunction;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.action.ActionType;
 import burlap.mdp.core.action.UniversalActionType;
+import burlap.mdp.core.oo.OODomain;
 import burlap.mdp.core.oo.propositional.PropositionalFunction;
 import burlap.mdp.core.oo.state.MutableOOState;
 import burlap.mdp.core.oo.state.OOState;
@@ -61,6 +63,8 @@ public class forklift implements DomainGenerator{
 	public static final String CLASS_WALL = "wall";
 	public static final String CLASS_BOX = "box";
 	public static final String CLASS_AREA = "area";
+	public static final String BOXES_IN_AREA = "depot";
+
 	
 	public static final double xBound = 40;
 	public static final double yBound = 40;
@@ -73,7 +77,7 @@ public class forklift implements DomainGenerator{
 	static double friction = .01;
 	static double rotFriction = 1;
 	static double brakeFriction = .05;
-	static double brakeRotFriction = 10;
+	static double brakeRotFriction = 5;
 	
 	public List<Double> goalArea; //xmin,xmax,ymin,ymax
 	
@@ -84,12 +88,7 @@ public class forklift implements DomainGenerator{
 	}
 	public List<PropositionalFunction> generatePfs(){
 		return Arrays.asList(
-				(PropositionalFunction)new BoxesInArea("goalpf"));
-//		return Arrays.asList(
-//				new OnPadPF(PF_ON_PAD),
-//				new TouchPadPF(PF_TOUTCH_PAD),
-//				new TouchSurfacePF(PF_TOUCH_SURFACE),
-//				new TouchGroundPF(PF_ON_GROUND, this.physParams.ymin));
+				(PropositionalFunction)new BoxesInArea(forklift.BOXES_IN_AREA));
 	}
 	
 	public TerminalFunction getTf() {
@@ -111,13 +110,13 @@ public class forklift implements DomainGenerator{
 	public OOSADomain generateDomain() {
 		
 		OOSADomain domain = new OOSADomain();
-		
-		FLModel fmodel = new FLModel(forwardAccel, backwardAccel, rotAccel);
-		tf = new FLTF();
-		rf = new SingleGoalPFRF(new BoxesInArea("rewardpf"));
-		FactoredModel factorModel = new FactoredModel((SampleStateModel)fmodel, rf, tf);
-		
-		domain.setModel(factorModel);
+		OODomain.Helper.addPfsToDomain(domain, this.generatePfs());
+	
+		domain.addStateClass(CLASS_AGENT, FLAgent.class)
+//this will have marginal utility, and should be supported in FLState
+//		.addStateClass(CLASS_BLOCK, FLBlock.class)
+		.addStateClass(CLASS_WALL, FLBlock.FLWall.class)
+		.addStateClass(CLASS_BOX, FLBlock.FLBox.class);
 		
 		domain.addActionTypes(new UniversalActionType(MOVE_FORWARD), 
 				new UniversalActionType(MOVE_BACKWARD),
@@ -129,65 +128,15 @@ public class forklift implements DomainGenerator{
 				new UniversalActionType(IDLE)
 				);
 		
-		domain.addStateClass(CLASS_AGENT, FLAgent.class)
-//this will have marginal utility, and should be supported in FLState
-//		.addStateClass(CLASS_BLOCK, FLBlock.class)
-		.addStateClass(CLASS_WALL, FLBlock.FLWall.class)
-		.addStateClass(CLASS_BOX, FLBlock.FLBox.class);
+		FLModel fmodel = new FLModel(forwardAccel, backwardAccel, rotAccel);
+		this.rf = new SingleGoalPFRF(domain.propFunction(forklift.BOXES_IN_AREA));
+		this.tf = new SinglePFTF(domain.propFunction(forklift.BOXES_IN_AREA));
+
+		FactoredModel factorModel = new FactoredModel(fmodel, this.rf, this.tf);
+		domain.setModel(factorModel);
 		
 		return domain;
 	}
-	
-//	public class FLAction implements Action
-//	{
-//		private String name;
-//
-//		public FLAction(String n)
-//		{
-//			name = n;
-//		}
-//		
-//		public String actionName() {
-//			return name;
-//		}
-//
-//		public Action copy() {
-//			return this;
-//		}
-//		
-//	}
-	
-//	public class FLActionType implements ActionType
-//	{
-//		String name;
-//		List<Action> actions;
-//
-//		public FLActionType(String name, List<Action> actions)
-//		{
-//			this.name = name;
-//			this.actions = actions;
-//		}
-//		
-//		public List<Action> allApplicableActions(State s) {
-//			return actions;
-//		}
-//
-//		public Action associatedAction(String s) {
-//			for(Action a: actions)
-//			{
-//				if(s.equals(a.actionName())){
-//					return a;
-//				}
-//			}
-//			
-//			return null;
-//		}
-//
-//		public String typeName() {
-//			return name;
-//		}
-//		
-//	}
 	
 	public static class FLModel implements SampleStateModel
 	{
@@ -460,22 +409,23 @@ public class forklift implements DomainGenerator{
 			Double nearY = (Double)box.get(forklift.ATT_Y);
 			Double farY = nearY+(Double)box.get(forklift.ATT_L);
 
-			if(nearX < (Double)area.get(0)||
-			   farX > (Double)area.get(1)||
-			   nearY < (Double)area.get(2)||
-			   farY > (Double)area.get(3))
+			if(farX < (Double)area.get(0)||
+			   nearX > (Double)area.get(1)||
+			   nearY > (Double)area.get(2)||
+			   farY < (Double)area.get(3))
 				return false;
 		return true;
 		}
 	}
 	public static class BoxesInArea extends PropositionalFunction{
-		private BoxInArea pf;
+		private PropositionalFunction pf;
 		public BoxesInArea(String name){
 			super(name, new String[]{CLASS_BOX});
 		}
 		
 		@Override
 		public boolean isTrue(OOState s, String... params) {
+			System.out.println("Is it true?");
 			pf = new BoxInArea("boxchecker");
 			boolean allInArea = true;
 			List<ObjectInstance> boxes = (List<ObjectInstance>)s.objectsOfClass(CLASS_BOX);
@@ -483,22 +433,23 @@ public class forklift implements DomainGenerator{
 				if (!pf.isTrue(s, ((FLBlock.FLBox)b).name()))
 					allInArea = false;
 				
+			System.out.println(allInArea);
 			return allInArea;
 		}
 	}
-	public static class FLTF implements TerminalFunction
-	{
-		
-		private BoxesInArea pf;
-		public FLTF()
-		{
-		pf = new BoxesInArea("prop");
-		}
-		public boolean isTerminal(State s) {
-			return pf.isTrue((OOState)s);
-		}
-		
-	}
+//	public static class FLTF implements TerminalFunction
+//	{
+//		
+//		private BoxesInArea pf;
+//		public FLTF()
+//		{
+//		pf = new BoxesInArea("prop");
+//		}
+//		public boolean isTerminal(State s) {
+//			return pf.isTrue((OOState)s);
+//		}
+//		
+//	}
 	
 //	public static class FLRF implements RewardFunction
 //	{

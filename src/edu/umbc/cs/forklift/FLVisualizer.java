@@ -99,20 +99,28 @@ public class FLVisualizer {
 
 		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) 
 		{
-			if(imgPath.equals("none") && (Boolean)ob.get(forklift.ATT_O))
+			if(imgPath.equals("none"))
 			{
 				g2.setColor(Color.RED);
 				
 				double x = (Double) ob.get(forklift.ATT_X);
 				double y = (Double) ob.get(forklift.ATT_Y);
+				double w = (Double) ob.get(forklift.ATT_W);
+				double l = (Double) ob.get(forklift.ATT_L);
 				
 				double width = cWidth / forklift.xBound;
 				double height = cHeight / forklift.yBound;
 				
 				double rx = x * width;
 				double ry = cHeight - height - y * height;
+				double rw = w * width;
+				double rl = l * height;
 				
-				g2.fill(new Rectangle2D.Double(rx, ry, width, height));
+				g2.fill(new Rectangle2D.Double(rx, ry, rw, rl));
+			}
+			else
+			{
+				
 			}
 		}
 	}
