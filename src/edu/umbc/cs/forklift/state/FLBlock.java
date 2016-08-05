@@ -23,17 +23,17 @@ public class FLBlock implements ObjectInstance {
 	private double yLength;
 	private double xWidth;
 	private String name;
-	private static String className;
+	private String className;
 	
 	private static final List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_W, ATT_L, ATT_N, ATT_O);
 	
-	public FLBlock(double x, double y, double yLength, double xWidth, String name) {
+	public FLBlock(double x, double y, double yLength, double xWidth, String name, String className) {
 		this.x = x;
 		this.y = y;
 		this.yLength = yLength;
 		this.xWidth = xWidth;
 		this.name = name;
-		className = CLASS_BLOCK;
+		this.className = className;
 	}
 
 	public List<Object> variableKeys() {
@@ -69,7 +69,7 @@ public class FLBlock implements ObjectInstance {
 	}
 
 	public FLBlock copy() {
-		return new FLBlock(x,y,yLength,xWidth,name);
+		return new FLBlock(x,y,yLength,xWidth,name, className);
 	}
 
 	public String className() {
@@ -89,8 +89,7 @@ public class FLBlock implements ObjectInstance {
 	public static class FLBox extends FLBlock{
 		boolean onGround;
 		public FLBox(double x, double y, double yLength, double xWidth, String name) {
-			super(x, y, yLength, xWidth, name);
-			className = CLASS_BOX;
+			super(x, y, yLength, xWidth, name, CLASS_BOX);
 			onGround = true;
 		}
 		public boolean pickUp(){
@@ -135,8 +134,7 @@ public class FLBlock implements ObjectInstance {
 	public static class FLWall extends FLBlock{
 
 		public FLWall(double x, double y, double yLength, double xWidth, String name) {
-			super(x, y, yLength, xWidth, name);
-			className = CLASS_WALL;
+			super(x, y, yLength, xWidth, name, CLASS_WALL);
 		}
 		
 	}

@@ -277,13 +277,6 @@ public class forklift implements DomainGenerator{
 			test.add(new Line2D.Double(x1, y1, x3, y2));
 			test.add(new Line2D.Double(x2, y2, x4, y4));
 			test.add(new Line2D.Double(x3, y3, x4, y4));
-			System.out.println(" ");
-			System.out.println(x1 + "," +  y1);
-			System.out.println(x2 + "," +  y2);
-			System.out.println(x3 + "," +  y3);
-			System.out.println(x4 + "," +  y4);
-			System.out.println(360 - direction);
-			System.out.println(" ");
 			for(ObjectInstance block: blocks)
 			{
 				
@@ -292,6 +285,10 @@ public class forklift implements DomainGenerator{
 				double blockW = (Double)block.get(ATT_W);
 				double blockL = (Double)block.get(ATT_L);
 				
+				if(block.className() == CLASS_BOX)
+				{
+					System.out.println(blockW + " " + blockL);
+				}
 				//System.out.println(direction);
 				ArrayList<Point2D.Double> forkliftPoints = new ArrayList<Point2D.Double>();
 				
