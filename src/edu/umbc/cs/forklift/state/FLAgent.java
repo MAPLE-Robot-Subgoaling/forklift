@@ -10,6 +10,7 @@ import static edu.umbc.cs.forklift.forklift.ATT_VX;
 import static edu.umbc.cs.forklift.forklift.ATT_VY;
 import static edu.umbc.cs.forklift.forklift.ATT_VR;
 import static edu.umbc.cs.forklift.forklift.ATT_B;
+import static edu.umbc.cs.forklift.forklift.ATT_VM;
 import static edu.umbc.cs.forklift.forklift.CLASS_AGENT;
 
 import java.util.Arrays;
@@ -31,38 +32,40 @@ public class FLAgent implements ObjectInstance {
 	private double vr;
 	private String name;
 	private FLBox grabbed;
+	private double vm;
 	
 	private static final List<Object> keys = 
 	Arrays.<Object>asList(ATT_X, ATT_Y, 
 						  ATT_VX, ATT_VY, ATT_VR,
 						  ATT_D,
 						  ATT_W, ATT_L, 
-						  ATT_N, ATT_B);
+						  ATT_N, ATT_B, ATT_VM);
 	
 	public FLAgent()
 	{
 		
 	}
 	
-	public FLAgent(double x, double y, double vx, double vy, double vr, double direction, double yLength, double xWidth, String name, FLBox grabbed)	
+	public FLAgent(double x, double y, double vx, double vy, double vr, double direction, double yLength, double xWidth, String name, FLBox grabbed, double vm)	
 	{
 		this.x = x;
 		this.y = y;
 		this.vx = vx;
 		this.vy = vy;
 		this.vr = vr;
+		this.vm = vm;
 		this.direction = direction;
 		this.yLength = yLength;
 		this.xWidth = xWidth;
 		this.name = name;
 		this.grabbed = grabbed;
 	}
-	public FLAgent(double x, double y, double direction, double yLength, double xWidth, String name, FLBox grabbed){
-		this(x,y,0,0,0,direction,yLength,xWidth,name, grabbed);
+	public FLAgent(double x, double y, double direction, double yLength, double xWidth, String name, FLBox grabbed, double vm){
+		this(x,y,0,0,0,direction,yLength,xWidth,name, grabbed, vm);
 	}
 
 	public FLAgent copy() {
-		return new FLAgent(x, y, vx, vy, vr, direction, yLength, xWidth, name, grabbed);
+		return new FLAgent(x, y, vx, vy, vr, direction, yLength, xWidth, name, grabbed, vm);
 	}
 
 	public void set(Object variableKey, Object v)
@@ -86,6 +89,7 @@ public class FLAgent implements ObjectInstance {
 				case 7: yLength = (Double) v;
 				case 8: name = (String) v;
 				case 9: grabbed = (FLBox)v;
+				case 10: vm = (Double)v;
 				default: throw new RuntimeException("Unknown key " + variableKey);
 			}
 		//if key is not string or integer
@@ -112,6 +116,7 @@ public class FLAgent implements ObjectInstance {
 					case 7: return yLength;
 					case 8: return name;
 					case 9: return grabbed;
+					case 10: return vm;
 					default: throw new RuntimeException("Unknown key " + variableKey);
 				}
 		//if key is not string or integer

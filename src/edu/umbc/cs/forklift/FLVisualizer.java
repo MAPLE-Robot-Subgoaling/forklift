@@ -112,7 +112,7 @@ public class FLVisualizer {
 				double height = cHeight / forklift.yBound;
 				
 				double rx = x * width;
-				double ry = cHeight - height - y * height;
+				double ry = cHeight  - height * l - y * height;
 				double rw = w * width;
 				double rl = l * height;
 				

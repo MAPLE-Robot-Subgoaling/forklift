@@ -48,6 +48,7 @@ public class forklift implements DomainGenerator{
 	public static final String ATT_N = "n";
 	public static final String ATT_B = "b";
 	public static final String ATT_O = "o";
+	public static final String ATT_VM = "vm";
 	public static final String PREFIX_ACCEL = "A_";
 	public static final String PREFIX_ROTATE_ACCEL = "AR_";
 	public static final String MOVE_FORWARD = PREFIX_ACCEL+"forward";
@@ -155,7 +156,7 @@ public class forklift implements DomainGenerator{
 			double realForwardAccel = 0.0;
 			double realClockRotateAccel = 0.0;
 			double fric =friction;
-			double rfric=rotFriction;
+			double rfric = rotFriction;
 			FLAgent agent = (FLAgent) s.get(CLASS_AGENT);
 			double direction = (Double)agent.get(ATT_D);
 			double px = (Double)agent.get(ATT_X);
@@ -166,6 +167,7 @@ public class forklift implements DomainGenerator{
 			double w = (Double)agent.get(ATT_W);
 			double l = (Double)agent.get(ATT_L);
 			FLBox b = (FLBox)agent.get(ATT_B);
+			double vMag = (Double)agent.get(ATT_VM);
 			
 			String actionName = a.actionName();
 			//check for new acceleration actions
@@ -187,7 +189,7 @@ public class forklift implements DomainGenerator{
 				}
 			}else if(actionName.equals(BRAKE)){
 				fric = brakeFriction;
-				rfric=brakeRotFriction;
+				rfric = brakeRotFriction;
 			}else if(actionName.equals(DROP)){
 				b.putDown();
 				b = null;				
@@ -235,13 +237,13 @@ public class forklift implements DomainGenerator{
 			double npy = py+vy;
 			
 			if(collisionCheck(s, npx, npy, w, l, direction) == false){
-				FLAgent newAgent = new FLAgent(npx, npy, vx, vy, vr, direction, l, w, "agent", (FLBox)agent.get(ATT_B));
+				FLAgent newAgent = new FLAgent(npx, npy, vx, vy, vr, direction, l, w, "agent", (FLBox)agent.get(ATT_B), newVelocity);
 				((MutableOOState) s).set(CLASS_AGENT, newAgent);
 			}
 			else{
 				//if collision, zero all velocities and revert to previous position
 				//TODO: is it possible to store a previous state's position and jump further backwards? 
-				FLAgent newAgent = new FLAgent(px, py, direction, l, w, "agent", (FLBox)agent.get(ATT_B));
+				FLAgent newAgent = new FLAgent(px, py, direction, l, w, "agent", (FLBox)agent.get(ATT_B), newVelocity);
 				((MutableOOState) s).set(CLASS_AGENT, newAgent);
 			}
 			return s;
@@ -284,11 +286,6 @@ public class forklift implements DomainGenerator{
 				double blockW = (Double)block.get(ATT_W);
 				double blockL = (Double)block.get(ATT_L);
 				
-				if(block.className() == CLASS_BOX)
-				{
-					System.out.println(blockW + " " + blockL);
-				}
-				//System.out.println(direction);
 				ArrayList<Point2D.Double> forkliftPoints = new ArrayList<Point2D.Double>();
 				
 				forkliftPoints.add(new Point2D.Double(x1, y1));
@@ -299,9 +296,9 @@ public class forklift implements DomainGenerator{
 				ArrayList<Point2D.Double> blockPoints = new ArrayList<Point2D.Double>();
 				
 				blockPoints.add(new Point2D.Double(blockX, blockY));
-				blockPoints.add(new Point2D.Double(blockX+blockW, blockY));
-				blockPoints.add(new Point2D.Double(blockX, blockY+blockL));
-				blockPoints.add(new Point2D.Double(blockX+blockW, blockY+blockL));
+				blockPoints.add(new Point2D.Double(blockX, blockY + blockL));
+				blockPoints.add(new Point2D.Double(blockX + blockW, blockY));
+				blockPoints.add(new Point2D.Double(blockX + blockW, blockY + blockL));
 				int sides = 0;
 				for(Line2D side: test)
 				{
@@ -358,14 +355,13 @@ public class forklift implements DomainGenerator{
 						if(mag < blockMin)
 							blockMin = mag;
 					}
-
 					if((blockMin > forkliftMin && blockMin < forkliftMax) || 
-							(blockMax > forkliftMin && blockMax < forkliftMax)){
+							(blockMax > forkliftMin && blockMax < forkliftMax)||
+							(forkliftMax > blockMin && forkliftMax < blockMax)||
+							(forkliftMin > blockMin && forkliftMin < blockMax)){
 						sides++;
-						//System.out.println(blockMin + " " + blockMax + " " + forkliftMin + " " + forkliftMax);
 					}
 				}
-
 				if(sides == 4)
 					return true;
 			}
@@ -421,7 +417,7 @@ public class forklift implements DomainGenerator{
 		
 		@Override
 		public boolean isTrue(OOState s, String... params) {
-			System.out.println("Is it true?");
+			//System.out.println("Is it true?");
 			pf = new BoxInArea("boxchecker");
 			boolean allInArea = true;
 			List<ObjectInstance> boxes = (List<ObjectInstance>)s.objectsOfClass(CLASS_BOX);
@@ -429,7 +425,7 @@ public class forklift implements DomainGenerator{
 				if (!pf.isTrue(s, ((FLBlock.FLBox)b).name()))
 					allInArea = false;
 				
-			System.out.println(allInArea);
+			//System.out.println(allInArea);
 			return allInArea;
 		}
 	}
