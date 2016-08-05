@@ -146,12 +146,12 @@ public class FLVisualizer {
 			double l = (Double) ob.get(forklift.ATT_L);
 			double direction = (Double)ob.get(forklift.ATT_D);
 			
-			System.out.println(x + " " + y + " " + w + " " + l);
+			//System.out.println(x + " " + y + " " + w + " " + l);
 			
 			AffineTransform rot = new AffineTransform(); 
 			Rectangle r = g2.getDeviceConfiguration().getBounds();
-			System.out.println(r.getX() + " " + r.getY() + " " + r.getWidth()+ " " + r.getHeight());
-			rot.translate(r.getWidth() * (x + w/2)/ (forklift.xBound), r.getHeight() * (forklift.yBound - y - l/2) / (forklift.yBound));
+			//System.out.println(r.getX() + " " + r.getY() + " " + r.getWidth()+ " " + r.getHeight());
+			rot.translate(r.getWidth() * (x)/ (forklift.xBound), r.getHeight() * (forklift.yBound - y) / (forklift.yBound));
 			rot.rotate(Math.toRadians(direction)); 
 			double cWidthSize = r.getWidth()/forklift.xBound * w;
 			double cHeightSize = r.getHeight()/forklift.yBound * l;
