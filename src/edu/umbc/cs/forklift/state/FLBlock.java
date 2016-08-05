@@ -23,7 +23,7 @@ public class FLBlock implements ObjectInstance {
 	private double yLength;
 	private double xWidth;
 	private String name;
-	private static String className;
+	protected String className;
 	
 	private static final List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_W, ATT_L, ATT_N, ATT_O);
 	
@@ -90,7 +90,7 @@ public class FLBlock implements ObjectInstance {
 		boolean onGround;
 		public FLBox(double x, double y, double yLength, double xWidth, String name) {
 			super(x, y, yLength, xWidth, name);
-			className = CLASS_BOX;
+			super.className = CLASS_BOX;
 			onGround = true;
 		}
 		public boolean pickUp(){
@@ -133,10 +133,9 @@ public class FLBlock implements ObjectInstance {
 		}
 	}
 	public static class FLWall extends FLBlock{
-
 		public FLWall(double x, double y, double yLength, double xWidth, String name) {
 			super(x, y, yLength, xWidth, name);
-			className = CLASS_WALL;
+			super.className = CLASS_WALL;
 		}
 		
 	}

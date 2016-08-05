@@ -129,10 +129,9 @@ public class forklift implements DomainGenerator{
 				);
 		
 		FLModel fmodel = new FLModel(forwardAccel, backwardAccel, rotAccel);
-		this.rf = new SingleGoalPFRF(domain.propFunction(forklift.BOXES_IN_AREA));
-		this.tf = new SinglePFTF(domain.propFunction(forklift.BOXES_IN_AREA));
-
-		FactoredModel factorModel = new FactoredModel(fmodel, this.rf, this.tf);
+		RewardFunction rf = new SingleGoalPFRF(domain.propFunction(forklift.BOXES_IN_AREA));
+		TerminalFunction tf = new SinglePFTF(domain.propFunction(forklift.BOXES_IN_AREA));
+		FactoredModel factorModel = new FactoredModel(fmodel, rf, tf);
 		domain.setModel(factorModel);
 		
 		return domain;
@@ -358,45 +357,4 @@ public class forklift implements DomainGenerator{
 			return allInArea;
 		}
 	}
-//	public static class FLTF implements TerminalFunction
-//	{
-//		
-//		private BoxesInArea pf;
-//		public FLTF()
-//		{
-//		pf = new BoxesInArea("prop");
-//		}
-//		public boolean isTerminal(State s) {
-//			return pf.isTrue((OOState)s);
-//		}
-//		
-//	}
-	
-//	public static class FLRF implements RewardFunction
-//	{
-//		
-//		public FLRF()
-//		{
-//		}
-//		
-//
-//		public double reward(State s, Action a, State sprime) {
-//			FLArea goal = (FLArea)s.get("goal");
-//			ArrayList<FLBox> boxes = (ArrayList<FLBox>)s.get(CLASS_BOX); 
-//			int captured = 0;
-//			for(FLBox b: boxes)
-//			{
-//				if((Double)b.get(forklift.ATT_X) >(Double) goal.get(0) && 
-//						(Double)b.get(forklift.ATT_X) <(Double) goal.get(1) &&
-//						(Double)b.get(forklift.ATT_Y) >(Double) goal.get(2) &&
-//						(Double)b.get(forklift.ATT_Y) <(Double) goal.get(3)){
-//					captured++;
-//				}
-//			}
-//			return captured;
-//		}
-//		
-//	}
-	
-	
 }
