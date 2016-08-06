@@ -224,7 +224,7 @@ public class forklift implements DomainGenerator{
 			//now that the real accelerations are calculated
 			//calculate the old real velocity
 			
-			double oldVelocity = (double) Math.sqrt(vx*vx+vy*vy);
+			double oldVelocity = vMag;
 			double newVelocity = oldVelocity+realForwardAccel;
 			if (newVelocity >=  fric)
 				newVelocity -= fric;
