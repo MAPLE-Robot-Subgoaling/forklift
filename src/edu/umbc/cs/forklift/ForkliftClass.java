@@ -6,6 +6,7 @@ import java.util.List;
 
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
+import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.shell.visual.VisualExplorer;
 import burlap.visualizer.Visualizer;
 import edu.umbc.cs.forklift.state.FLAgent;
@@ -20,6 +21,7 @@ public class ForkliftClass {
 
 		forklift gen = new forklift();
 		SADomain domain = gen.generateDomain();
+
 		FLAgent agent = new FLAgent(2.1, 1.6, 0, 0, 0, 0, 1, 2,"agent", null, 0);
 		
 		ArrayList<FLBlock> walls = new ArrayList<FLBlock>();
@@ -45,11 +47,13 @@ public class ForkliftClass {
 		walls.addAll(GenerateRoom(20,39,0,20,gaps));
 		walls.addAll(GenerateRoom(20,39,20,39,gaps));
 		walls.addAll(GenerateRoom(0,20,20,39,gaps));
-
+		//use wally for testing 
+		//walls.add(new FLBlock.FLWall(0, 0, 0, 0, "Wally"));
 		FLArea goalArea = new FLArea(20.0, 39.0, 20.0, 0.0, "goal");
 
 
 		FLState state = new FLState(agent, walls, boxes, goalArea);
+		System.out.println(domain.getModel().terminal(state));
 		SimulatedEnvironment env = new SimulatedEnvironment(domain, state);
 
 		FLVisualizer flv = new FLVisualizer();
