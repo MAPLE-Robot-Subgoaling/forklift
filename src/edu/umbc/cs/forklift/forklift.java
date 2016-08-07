@@ -166,7 +166,7 @@ public class forklift implements DomainGenerator{
 			double vr = (Double)agent.get(ATT_VR);
 			double w = (Double)agent.get(ATT_W);
 			double l = (Double)agent.get(ATT_L);
-			FLBox b = (FLBox)agent.get(ATT_B);
+			FLBox b = agent.getGrabbed();
 			double vMag = (Double)agent.get(ATT_VM);
 			
 			String actionName = a.actionName();
@@ -191,6 +191,7 @@ public class forklift implements DomainGenerator{
 				fric = brakeFriction;
 				rfric = brakeRotFriction;
 			}else if(actionName.equals(DROP)){
+				//System.out.println("dropping");
 				if(b != null){
 					Double dx = Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2;
 					Double dy = Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;
@@ -204,12 +205,13 @@ public class forklift implements DomainGenerator{
 						boxes.add(box);
 						((FLState) s).set(CLASS_BOX,boxes);
 						b = null;
+						//System.out.println("dropped");
 					}
 				}
 			}
 			else if(actionName.equals(PICKUP) && b == null)
 			{
-				System.out.println("Entered");
+				//System.out.println("picking up");
 				if(vMag < 0.6 && vr < 2)
 				{
 					//System.out.println(vMag + " " + vr);
@@ -218,11 +220,11 @@ public class forklift implements DomainGenerator{
 					{
 						b = picked;
 						picked.pickUp();
-						System.out.println("picked up");
+						//System.out.println("picked up");
 					}
 				}
 			}
-				
+			//System.out.println(actionName);
 			//calculate acceleration based on input
 			//friction is modeled as an acceleration
 			//in the opposite direction of velocity

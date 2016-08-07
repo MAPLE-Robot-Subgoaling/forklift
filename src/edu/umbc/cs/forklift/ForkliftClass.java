@@ -2,12 +2,26 @@ package edu.umbc.cs.forklift;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import burlap.behavior.functionapproximation.DifferentiableStateActionValue;
+import burlap.behavior.functionapproximation.dense.ConcatenatedObjectFeatures;
+import burlap.behavior.functionapproximation.dense.NumericVariableFeatures;
+import burlap.behavior.functionapproximation.sparse.tilecoding.TileCodingFeatures;
+import burlap.behavior.functionapproximation.sparse.tilecoding.TilingArrangement;
+import burlap.behavior.policy.GreedyQPolicy;
+import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.PolicyUtils;
+import burlap.behavior.singleagent.Episode;
+import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
+import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
+import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.oo.OOSADomain;
 import burlap.shell.visual.VisualExplorer;
+import burlap.statehashing.simple.SimpleHashableStateFactory;
 import burlap.visualizer.Visualizer;
 import edu.umbc.cs.forklift.state.FLAgent;
 import edu.umbc.cs.forklift.state.FLArea;
@@ -55,10 +69,21 @@ public class ForkliftClass {
 		FLState state = new FLState(agent, walls, boxes, goalArea);
 		System.out.println(domain.getModel().terminal(state));
 		SimulatedEnvironment env = new SimulatedEnvironment(domain, state);
-
+		
 		FLVisualizer flv = new FLVisualizer();
 		Visualizer v = flv.getVisualizer();
 		
+		/*SparseSampling ss = new SparseSampling(domain, 1, new SimpleHashableStateFactory(), 10, 20);
+		ss.setForgetPreviousPlanResults(true);
+		ss.toggleDebugPrinting(true);
+		Policy p = new GreedyQPolicy(ss);
+		
+		Episode e = PolicyUtils.rollout(p, state, domain.getModel(), 50);
+		System.out.println("Num steps: " + e.maxTimeStep());
+		
+		new EpisodeSequenceVisualizer(v, domain, Arrays.asList(e));
+	
+		*/
 		VisualExplorer exp = new VisualExplorer(domain, env, v);
 
 		exp.addKeyAction("w", forklift.MOVE_FORWARD, "");
@@ -115,5 +140,11 @@ public class ForkliftClass {
 			}
 		}
 		return room;
+	}
+	
+	public static void FLSARSA()
+	{
+		
+
 	}
 }

@@ -26,7 +26,7 @@ public class FLBlock implements ObjectInstance {
 	protected String className;
 
 	
-	private static final List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_W, ATT_L, ATT_N, ATT_O);
+	private List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_W, ATT_L, ATT_N);
 	
 	public FLBlock(double x, double y, double yLength, double xWidth, String name) {
 		this.x = x;
@@ -92,6 +92,7 @@ public class FLBlock implements ObjectInstance {
 		public FLBox(double x, double y, double yLength, double xWidth, String name) {
 			super(x, y, yLength, xWidth, name);
 			super.className = CLASS_BOX;
+			//super.keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_W, ATT_L, ATT_N, ATT_O);
 
 			onGround = true;
 		}

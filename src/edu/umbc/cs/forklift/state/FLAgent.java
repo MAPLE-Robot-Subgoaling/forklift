@@ -39,7 +39,7 @@ public class FLAgent implements ObjectInstance {
 						  ATT_VX, ATT_VY, ATT_VR,
 						  ATT_D,
 						  ATT_W, ATT_L, 
-						  ATT_N, ATT_B, ATT_VM);
+						  ATT_N, ATT_VM);
 	
 	public FLAgent()
 	{
@@ -88,8 +88,7 @@ public class FLAgent implements ObjectInstance {
 				case 6: xWidth = (Double) v;
 				case 7: yLength = (Double) v;
 				case 8: name = (String) v;
-				case 9: grabbed = (FLBox)v;
-				case 10: vm = (Double)v;
+				case 9: vm = (Double)v;
 				default: throw new RuntimeException("Unknown key " + variableKey);
 			}
 		//if key is not string or integer
@@ -115,8 +114,7 @@ public class FLAgent implements ObjectInstance {
 					case 6: return xWidth;
 					case 7: return yLength;
 					case 8: return name;
-					case 9: return grabbed;
-					case 10: return vm;
+					case 9: return vm;
 					default: throw new RuntimeException("Unknown key " + variableKey);
 				}
 		//if key is not string or integer
@@ -140,6 +138,16 @@ public class FLAgent implements ObjectInstance {
 
 	public String name() {
 		return CLASS_AGENT;
+	}
+	
+	public FLBox getGrabbed()
+	{
+		return grabbed;
+	}
+	
+	public void setGrabbed(FLBox grabbed)
+	{
+		this.grabbed = grabbed;
 	}
 	
 	public String toString() {
