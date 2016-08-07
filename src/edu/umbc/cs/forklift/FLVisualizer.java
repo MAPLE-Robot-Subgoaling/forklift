@@ -3,6 +3,7 @@ package edu.umbc.cs.forklift;
 import static edu.umbc.cs.forklift.forklift.CLASS_AGENT;
 import static edu.umbc.cs.forklift.forklift.CLASS_BOX;
 import static edu.umbc.cs.forklift.forklift.CLASS_WALL;
+import static edu.umbc.cs.forklift.forklift.ATT_O;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -99,7 +100,8 @@ public class FLVisualizer {
 
 		public void paintObject(Graphics2D g2, OOState s, ObjectInstance ob, float cWidth, float cHeight) 
 		{
-			if(imgPath.equals("none"))
+			boolean o = (Boolean)ob.get(ATT_O);
+			if(imgPath.equals("none") && o == true)
 			{
 				g2.setColor(Color.RED);
 				

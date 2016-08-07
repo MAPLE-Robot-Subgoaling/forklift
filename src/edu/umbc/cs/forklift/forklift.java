@@ -191,14 +191,31 @@ public class forklift implements DomainGenerator{
 				fric = brakeFriction;
 				rfric = brakeRotFriction;
 			}else if(actionName.equals(DROP)){
-				b.putDown();
-				b = null;				
+				if(b != null){
+					b.putDown();
+					List<FLBlock> boxes = (List<FLBlock>)s.get(CLASS_BOX);
+					boxes.remove(b);
+					Double dx = Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2;
+					Double dy = Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;
+					FLBox box = new FLBox(px + dx, py + dy, (Double)b.get(ATT_L), (Double)b.get(ATT_W), (String) b.get(ATT_N));
+					boxes.add(box);
+					((FLState) s).set(CLASS_BOX,boxes);
+					b = null;		
+				}
 			}
-			else if(actionName.equals(PICKUP))
+			else if(actionName.equals(PICKUP) && b == null)
 			{
-				if(vx == 0 && vy == 0 && vr == 0)
+				System.out.println("Entered");
+				if(vMag < 0.6 && vr < 2)
 				{
-					
+					//System.out.println(vMag + " " + vr);
+					FLBlock.FLBox picked = pickup(s, px, py, w, l, direction);
+					if(picked != null)
+					{
+						b = picked;
+						picked.pickUp();
+						System.out.println("picked up");
+					}
 				}
 			}
 				
@@ -237,13 +254,13 @@ public class forklift implements DomainGenerator{
 			double npy = py+vy;
 			
 			if(collisionCheck(s, npx, npy, w, l, direction) == false){
-				FLAgent newAgent = new FLAgent(npx, npy, vx, vy, vr, direction, l, w, "agent", (FLBox)agent.get(ATT_B), newVelocity);
+				FLAgent newAgent = new FLAgent(npx, npy, vx, vy, vr, direction, l, w, "agent", b, newVelocity);
 				((MutableOOState) s).set(CLASS_AGENT, newAgent);
 			}
 			else{
 				//if collision, zero all velocities and revert to previous position
 				//TODO: is it possible to store a previous state's position and jump further backwards? 
-				FLAgent newAgent = new FLAgent(px, py, (Double)agent.get(ATT_D), l, w, "agent", (FLBox)agent.get(ATT_B), 0);
+				FLAgent newAgent = new FLAgent(px, py, (Double)agent.get(ATT_D), l, w, "agent", b, 0);
 				((MutableOOState) s).set(CLASS_AGENT, newAgent);
 			}
 			return s;
@@ -264,20 +281,237 @@ public class forklift implements DomainGenerator{
 			blocks.addAll(((MutableOOState) s).objectsOfClass(CLASS_BOX));
 			ArrayList<Line2D.Double> test = new ArrayList<Line2D.Double>(); 
 			Double x1, x2, x3, x4, y1, y2, y3, y4;
-			Double dx = Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2;
+			/*Double dx = Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2;
 			Double dy = Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;
-			x1 = x + dx;
-			y1 = y + dy;
-			x2 = x - dx;
-			y2 = y + dy;
-			x3 = x + dx;
-			y3 = y - dy;
-			x4 = x - dx;
-			y4 = y - dy;
+			System.out.println(360 - direction);*/
+			x1 = x + Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2;
+			y1 = y + Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;
+			x2 = x + Math.cos(Math.toRadians(360-direction)) * w/2 - Math.cos(Math.toRadians(450-direction)) * l/2;
+			y2 = y + Math.sin(Math.toRadians(360-direction)) * w/2 - Math.sin(Math.toRadians(450-direction)) * l/2;
+			x3 = x - Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2;
+			y3 = y - Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;
+			x4 = x - Math.cos(Math.toRadians(360-direction)) * w/2 - Math.cos(Math.toRadians(450-direction)) * l/2;
+			y4 = y - Math.sin(Math.toRadians(360-direction)) * w/2 - Math.sin(Math.toRadians(450-direction)) * l/2;
+			/*System.out.println(x1 + " " + y1);
+			System.out.println(x2 + " " + y2);
+			System.out.println(x3 + " " + y3);
+			System.out.println(x4 + " " + y4);
+			System.out.println("");*/
 			test.add(new Line2D.Double(x1, y1, x2, y2));
-			test.add(new Line2D.Double(x1, y1, x3, y2));
+			test.add(new Line2D.Double(x1, y1, x3, y3));
 			test.add(new Line2D.Double(x2, y2, x4, y4));
 			test.add(new Line2D.Double(x3, y3, x4, y4));
+			
+			for(ObjectInstance block: blocks)
+			{
+				if(block.className() == CLASS_BOX)
+					if((Boolean)block.get(ATT_O) == false)
+						continue;
+				double blockX = (Double)block.get(ATT_X);
+				double blockY = (Double)block.get(ATT_Y);
+				double blockW = (Double)block.get(ATT_W);
+				double blockL = (Double)block.get(ATT_L);
+				//System.out.println(blockW + "  "  + blockL);
+				ArrayList<Point2D.Double> forkliftPoints = new ArrayList<Point2D.Double>();
+				
+				forkliftPoints.add(new Point2D.Double(x1, y1));
+				forkliftPoints.add(new Point2D.Double(x2, y2));
+				forkliftPoints.add(new Point2D.Double(x3, y3));
+				forkliftPoints.add(new Point2D.Double(x4, y4));
+				
+				ArrayList<Point2D.Double> blockPoints = new ArrayList<Point2D.Double>();
+				
+				blockPoints.add(new Point2D.Double(blockX, blockY));
+				blockPoints.add(new Point2D.Double(blockX, blockY + blockL));
+				blockPoints.add(new Point2D.Double(blockX + blockW, blockY));
+				blockPoints.add(new Point2D.Double(blockX + blockW, blockY + blockL));
+				
+				ArrayList<Line2D.Double> blockSides = new ArrayList<Line2D.Double>(); 
+				blockSides.add(new Line2D.Double(blockPoints.get(0),blockPoints.get(1)));
+				blockSides.add(new Line2D.Double(blockPoints.get(0),blockPoints.get(2)));
+				blockSides.add(new Line2D.Double(blockPoints.get(1),blockPoints.get(3)));
+				blockSides.add(new Line2D.Double(blockPoints.get(2),blockPoints.get(3)));
+				
+				
+				/*
+				for(Point2D corner: blockPoints){
+					System.out.println(corner);
+				}
+				for(Point2D corner: forkliftPoints){
+					System.out.println(corner);
+				}
+				*/
+				int sides = 0;
+				for(Line2D side: test)
+				{
+					double deltaX = side.getX2() - side.getX1();
+					double slope = 0;
+					double vectorY, vectorX;
+					if(deltaX != 0){
+						if(side.getY2() - side.getY1() != 0){
+							slope = (side.getY2() - side.getY1())/deltaX;
+							vectorY = (-1/slope) * 2;
+							vectorX = 2;
+						}
+						else
+						{
+							vectorX = 0;
+							vectorY = 2;
+						}
+					}
+					else{
+						vectorX = 2;
+						vectorY = 0;
+					}
+					
+					ArrayList<Point2D.Double> projBlock = new ArrayList<Point2D.Double>();
+					for(Point2D corner: blockPoints){
+						double vectorDotCorner = vectorX * corner.getX() + vectorY * corner.getY();
+						double vectorDotVector = vectorX * vectorX + vectorY * vectorY;
+						double scalar = vectorDotCorner / vectorDotVector;
+						projBlock.add(new Point2D.Double(vectorX * scalar, vectorY * scalar ));
+					}
+					
+					ArrayList<Point2D.Double> projForklift = new ArrayList<Point2D.Double>();
+					for(Point2D corner: forkliftPoints){
+						double vectorDotCorner = vectorX * corner.getX() + vectorY * corner.getY();
+						double vectorDotVector = vectorX * vectorX + vectorY * vectorY;
+						double scalar = vectorDotCorner / vectorDotVector;
+						//System.out.println(scalar);
+						projForklift.add(new Point2D.Double(vectorX * scalar, vectorY * scalar ));
+					}
+					double forkliftMax = 0.0, forkliftMin = 80.0;
+					for(Point2D proj: projForklift){
+						double mag = Math.sqrt(proj.getX()*proj.getX() + proj.getY()*proj.getY());
+						if(mag > forkliftMax)
+							forkliftMax = mag;
+						if(mag < forkliftMin)
+							forkliftMin = mag;
+						//System.out.println(" ");
+						//System.out.print(mag + " ");
+					}
+					
+					double blockMax = 0.0, blockMin = 80.0;
+					for(Point2D proj: projBlock){
+						double mag = Math.sqrt(proj.getX()*proj.getX() + proj.getY()*proj.getY());
+						if(mag > blockMax)
+							blockMax = mag;
+						if(mag < blockMin)
+							blockMin = mag;
+						//System.out.println(mag);
+					}
+					if((blockMin > forkliftMin && blockMin < forkliftMax) || 
+							(blockMax > forkliftMin && blockMax < forkliftMax)||
+							(forkliftMax > blockMin && forkliftMax < blockMax)||
+							(forkliftMin > blockMin && forkliftMin < blockMax)){
+						sides++;
+					}
+				}
+				for(Line2D side: blockSides)
+				{
+					double deltaX = side.getX2() - side.getX1();
+					double slope = 0;
+					double vectorY, vectorX;
+					if(deltaX != 0){
+						if(side.getY2() - side.getY1() != 0){
+							slope = (side.getY2() - side.getY1())/deltaX;
+							vectorY = (-1/slope) * 2;
+							vectorX = 2;
+						}
+						else
+						{
+							vectorX = 0;
+							vectorY = 2;
+						}
+					}
+					else{
+						vectorX = 2;
+						vectorY = 0;
+					}
+					
+					ArrayList<Point2D.Double> projBlock = new ArrayList<Point2D.Double>();
+					for(Point2D corner: blockPoints){
+						double vectorDotCorner = vectorX * corner.getX() + vectorY * corner.getY();
+						double vectorDotVector = vectorX * vectorX + vectorY * vectorY;
+						double scalar = vectorDotCorner / vectorDotVector;
+						projBlock.add(new Point2D.Double(vectorX * scalar, vectorY * scalar ));
+					}
+					
+					ArrayList<Point2D.Double> projForklift = new ArrayList<Point2D.Double>();
+					for(Point2D corner: forkliftPoints){
+						double vectorDotCorner = vectorX * corner.getX() + vectorY * corner.getY();
+						double vectorDotVector = vectorX * vectorX + vectorY * vectorY;
+						double scalar = vectorDotCorner / vectorDotVector;
+						//System.out.println(scalar);
+						projForklift.add(new Point2D.Double(vectorX * scalar, vectorY * scalar ));
+					}
+					double forkliftMax = 0.0, forkliftMin = 80.0;
+					for(Point2D proj: projForklift){
+						double mag = Math.sqrt(proj.getX()*proj.getX() + proj.getY()*proj.getY());
+						if(mag > forkliftMax)
+							forkliftMax = mag;
+						if(mag < forkliftMin)
+							forkliftMin = mag;
+						//System.out.println(" ");
+						//System.out.print(mag + " ");
+					}
+					
+					double blockMax = 0.0, blockMin = 80.0;
+					for(Point2D proj: projBlock){
+						double mag = Math.sqrt(proj.getX()*proj.getX() + proj.getY()*proj.getY());
+						if(mag > blockMax)
+							blockMax = mag;
+						if(mag < blockMin)
+							blockMin = mag;
+						//System.out.println(mag);
+					}
+					if((blockMin > forkliftMin && blockMin < forkliftMax) || 
+							(blockMax > forkliftMin && blockMax < forkliftMax)||
+							(forkliftMax > blockMin && forkliftMax < blockMax)||
+							(forkliftMin > blockMin && forkliftMin < blockMax)){
+						sides++;
+					}
+				}
+				if(sides == 8){
+					System.out.println(block.className());
+					System.out.println(block.get(ATT_X) + " " + block.get(ATT_Y));
+					System.out.println(x + " " + y + " " + direction);
+					System.out.println(x1 + " " + y1);
+					System.out.println(x2 + " " + y2);
+					System.out.println(x3 + " " + y3);
+					System.out.println(x4 + " " + y4);
+					System.out.println("");
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		public FLBlock.FLBox pickup(State s, double x, double y, double w, double l, double direction)
+		{
+			List<ObjectInstance> blocks = ((MutableOOState) s).objectsOfClass(CLASS_BOX);
+			ArrayList<Line2D.Double> test = new ArrayList<Line2D.Double>(); 
+			Double x1, x2, x3, x4, y1, y2, y3, y4;
+			/*
+			Double dx = Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2;
+			Double dy = Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;
+			System.out.println(dx + " " + dy);
+			System.out.println(x + " " + y);
+			*/
+			x1 = x + Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2;
+			y1 = y + Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;;
+			x3 = x + Math.cos(Math.toRadians(360-direction)) * w/2 - Math.cos(Math.toRadians(450-direction)) * l/2;
+			y3 = y + Math.sin(Math.toRadians(360-direction)) * w/2 - Math.sin(Math.toRadians(450-direction)) * l/2;;
+			x2 = x - Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2;
+			y2 = y - Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;;
+			x4 = x - Math.cos(Math.toRadians(360-direction)) * w/2 - Math.cos(Math.toRadians(450-direction)) * l/2;
+			y4 = y - Math.sin(Math.toRadians(360-direction)) * w/2 - Math.sin(Math.toRadians(450-direction)) * l/2;;
+			/*System.out.println(x1 + " " + y1);
+			System.out.println(x2 + " " + y2);
+			System.out.println(x3 + " " + y3);
+			System.out.println(x4 + " " + y4);*/
+			test.add(new Line2D.Double(x1, y1, x3, y3));
+			test.add(new Line2D.Double(x2, y2, x4, y4));
 			for(ObjectInstance block: blocks)
 			{
 				
@@ -308,6 +542,72 @@ public class forklift implements DomainGenerator{
 					if(deltaX != 0){
 						if(side.getY2() - side.getY1() != 0){
 							slope = (side.getY2() - side.getY1())/deltaX;
+							vectorY = (-1/slope) * 80;
+							vectorX = 80;
+						}
+						else
+						{
+							vectorX = 0;
+							vectorY = 80;
+						}
+					}
+					else{
+						vectorX = 80;
+						vectorY = 0;
+					}
+					
+					System.out.println(deltaX + " " + side.getY2() + " " + side.getY1());
+					
+					ArrayList<Point2D.Double> projBlock = new ArrayList<Point2D.Double>();
+					for(Point2D corner: blockPoints){
+						double vectorDotCorner = vectorX * corner.getX() + vectorY * corner.getY();
+						double vectorDotVector = vectorX * vectorX + vectorY * vectorY;
+						double scalar = vectorDotCorner / vectorDotVector;
+						projBlock.add(new Point2D.Double(vectorX * scalar, vectorY * scalar ));
+					}
+					ArrayList<Point2D.Double> projForklift = new ArrayList<Point2D.Double>();
+					for(Point2D corner: forkliftPoints){
+						double vectorDotCorner = vectorX * corner.getX() + vectorY * corner.getY();
+						double vectorDotVector = vectorX * vectorX + vectorY * vectorY;
+						double scalar = vectorDotCorner / vectorDotVector;
+						projForklift.add(new Point2D.Double(vectorX * scalar, vectorY * scalar ));
+					}
+					double forkliftMax = 0.0, forkliftMin = 80.0;
+					for(Point2D proj: projForklift){
+						//System.out.println(proj);
+						double mag = Math.sqrt(proj.getX()*proj.getX() + proj.getY()*proj.getY());
+						if(mag > forkliftMax)
+							forkliftMax = mag;
+						if(mag < forkliftMin)
+							forkliftMin = mag;
+					}
+					//System.out.println("");
+					double blockMax = 0.0, blockMin = 80.0;
+					for(Point2D proj: projBlock){
+						//System.out.println(proj);
+						double mag = Math.sqrt(proj.getX()*proj.getX() + proj.getY()*proj.getY());
+						if(mag > blockMax)
+							blockMax = mag;
+						if(mag < blockMin)
+							blockMin = mag;
+					}
+					if((blockMin > forkliftMin && blockMin < forkliftMax) || 
+							(blockMax > forkliftMin && blockMax < forkliftMax)||
+							(forkliftMax > blockMin && forkliftMax < blockMax)||
+							(forkliftMin > blockMin && forkliftMin < blockMax)){
+						sides++;
+					}
+				}
+				if(sides == 2)
+				{
+					System.out.println("partial collision true");
+					Line2D.Double front = new Line2D.Double(x1, y1, x3, y3);
+					double deltaX = front.getX2() - front.getX1();
+					double slope = 0;
+					double vectorY, vectorX;
+					if(deltaX != 0){
+						if(front.getY2() - front.getY1() != 0){
+							slope = (front.getY2() - front.getY1())/deltaX;
 							vectorY = (1/slope) * 80;
 							vectorX = 80;
 						}
@@ -338,14 +638,6 @@ public class forklift implements DomainGenerator{
 						double scalar = vectorDotCorner / vectorDotVector;
 						projForklift.add(new Point2D.Double(vectorX * scalar, vectorY * scalar ));
 					}
-					double forkliftMax = 0.0, forkliftMin = 80.0;
-					for(Point2D proj: projForklift){
-						double mag = Math.sqrt(proj.getX()*proj.getX() + proj.getY()*proj.getY());
-						if(mag > forkliftMax)
-							forkliftMax = mag;
-						if(mag < forkliftMin)
-							forkliftMin = mag;
-					}
 					
 					double blockMax = 0.0, blockMin = 80.0;
 					for(Point2D proj: projBlock){
@@ -355,32 +647,14 @@ public class forklift implements DomainGenerator{
 						if(mag < blockMin)
 							blockMin = mag;
 					}
-					if((blockMin > forkliftMin && blockMin < forkliftMax) || 
-							(blockMax > forkliftMin && blockMax < forkliftMax)||
-							(forkliftMax > blockMin && forkliftMax < blockMax)||
-							(forkliftMin > blockMin && forkliftMin < blockMax)){
-						sides++;
+					double mag1 = Math.sqrt(Math.pow(projForklift.get(0).getX(), 2) + Math.pow(projForklift.get(0).getY(), 2)); 
+					double mag2 = Math.sqrt(Math.pow(projForklift.get(2).getX(), 2) + Math.pow(projForklift.get(2).getY(), 2)); 
+					if(Math.abs(mag1 - blockMin) < 1 ||
+							Math.abs(mag1 - blockMax) < 1 ||
+							Math.abs(mag2 - blockMin) < 1 ||
+							Math.abs(mag2 - blockMax) < 1){
+						return (FLBlock.FLBox)block;
 					}
-				}
-				if(sides == 4)
-					return true;
-			}
-			return false;
-		}
-		
-		public FLBox pickup(State s, double x, double y, double w, double l){
-			List<ObjectInstance> boxes = ((MutableOOState)s).objectsOfClass(CLASS_BOX);
-			for(ObjectInstance box: boxes)
-			{
-				Rectangle b = new Rectangle();
-				b.setRect((Double)box.get(ATT_X),(Double)box.get(ATT_Y), (Double)box.get(ATT_W), (Double)box.get(ATT_L));
-				Rectangle f = new Rectangle();
-				f.setRect(x, y, w, l);
-				
-				if (f.x < b.x + b.width &&
-						   f.x + f.width > b.x)
-				{
-					
 				}
 			}
 			return null;
