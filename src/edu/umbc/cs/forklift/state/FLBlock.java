@@ -26,7 +26,7 @@ public class FLBlock implements ObjectInstance {
 	protected String className;
 
 	
-	private List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_W, ATT_L, ATT_N);
+	private List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_W, ATT_L);
 	
 	public FLBlock(double x, double y, double yLength, double xWidth, String name) {
 		this.x = x;
@@ -51,8 +51,6 @@ public class FLBlock implements ObjectInstance {
 				return xWidth;
 			else if(variableKey.equals(ATT_L))
 				return yLength;
-			else if(variableKey.equals(ATT_N))
-				return name;
 			else
 				throw new RuntimeException("Unknown key " + variableKey);
 		
@@ -62,7 +60,6 @@ public class FLBlock implements ObjectInstance {
 					case 1:	return y;
 					case 2: return xWidth;
 					case 3: return yLength;
-					case 4: return name;
 					default: throw new RuntimeException("Unknown key " + variableKey);
 				}
 		//if key is not string or integer
@@ -127,8 +124,7 @@ public class FLBlock implements ObjectInstance {
 					case 1:	return super.get(variableKey);
 					case 2: return super.get(variableKey);
 					case 3: return super.get(variableKey);
-					case 4: return super.get(variableKey);
-					case 5: return onGround;
+					case 4: return onGround;
 					default: throw new RuntimeException("Unknown key " + variableKey);
 				}
 			}	

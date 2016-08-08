@@ -6,8 +6,10 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import burlap.mdp.auxiliary.DomainGenerator;
+import burlap.mdp.auxiliary.StateGenerator;
 import burlap.mdp.auxiliary.common.SinglePFTF;
 import burlap.mdp.auxiliary.stateconditiontest.StateConditionTest;
 import burlap.mdp.core.TerminalFunction;
@@ -82,7 +84,7 @@ public class forklift implements DomainGenerator{
 	
 	public List<Double> goalArea; //xmin,xmax,ymin,ymax
 	
-	public static int captured = 0; 
+	public static int captured = 0;
 	
 	public forklift()
 	{
@@ -192,20 +194,25 @@ public class forklift implements DomainGenerator{
 				rfric = brakeRotFriction;
 			}else if(actionName.equals(DROP)){
 				//System.out.println("dropping");
-				if(b != null){
-					Double dx = Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2;
-					Double dy = Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;
-					if(!objectCollisionCheck(s, px + dx, py + dy, (Double)b.get(ATT_L), (Double)b.get(ATT_W)))
+				
+				if(vMag < 0.6 && vr < 2)
 					{
-						b.putDown();
-						@SuppressWarnings("unchecked")
-						List<FLBlock> boxes = (List<FLBlock>)s.get(CLASS_BOX);
-						boxes.remove(b);
-						FLBox box = new FLBox(px + dx, py + dy, (Double)b.get(ATT_L), (Double)b.get(ATT_W), (String) b.get(ATT_N));
-						boxes.add(box);
-						((FLState) s).set(CLASS_BOX,boxes);
-						b = null;
-						//System.out.println("dropped");
+						if(b != null)
+						{
+							Double dx = Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2;
+							Double dy = Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;
+							if(!objectCollisionCheck(s, px + dx, py + dy, (Double)b.get(ATT_L), (Double)b.get(ATT_W)))
+							{
+								b.putDown();
+								@SuppressWarnings("unchecked")
+								List<FLBlock> boxes = (List<FLBlock>)s.get(CLASS_BOX);
+								boxes.remove(b);
+								FLBox box = new FLBox(px + dx, py + dy, (Double)b.get(ATT_L), (Double)b.get(ATT_W), (String) b.name());
+								boxes.add(box);
+								((FLState) s).set(CLASS_BOX,boxes);
+								b = null;
+								//System.out.println("dropped");
+							}
 					}
 				}
 			}
@@ -274,7 +281,7 @@ public class forklift implements DomainGenerator{
 
 		public State sample(State s, Action a) {
 			s = s.copy();
-			return move(s, a);
+ 			return move(s, a);
 		}
 
 		public boolean terminal(State s) {
@@ -702,4 +709,5 @@ public class forklift implements DomainGenerator{
 			return allInArea;
 		}
 	}
+	
 }

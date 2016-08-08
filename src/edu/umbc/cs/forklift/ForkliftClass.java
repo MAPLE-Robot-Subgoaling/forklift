@@ -17,6 +17,7 @@ import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.auxiliary.EpisodeSequenceVisualizer;
 import burlap.behavior.singleagent.learning.tdmethods.vfa.GradientDescentSarsaLam;
 import burlap.behavior.singleagent.planning.stochastic.sparsesampling.SparseSampling;
+import burlap.mdp.auxiliary.StateGenerator;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.SimulatedEnvironment;
 import burlap.mdp.singleagent.oo.OOSADomain;
@@ -73,17 +74,58 @@ public class ForkliftClass {
 		FLVisualizer flv = new FLVisualizer();
 		Visualizer v = flv.getVisualizer();
 		
-		/*SparseSampling ss = new SparseSampling(domain, 1, new SimpleHashableStateFactory(), 10, 20);
+		ConcatenatedObjectFeatures inputFeatures = new ConcatenatedObjectFeatures()
+				.addObjectVectorizion(forklift.CLASS_AGENT, new NumericVariableFeatures());
+				/*.addObjectVectorizion(forklift.CLASS_AREA, new NumericVariableFeatures())
+				.addObjectVectorizion(forklift.CLASS_BLOCK, new NumericVariableFeatures())
+				.addObjectVectorizion(forklift.CLASS_BOX, new NumericVariableFeatures())
+				.addObjectVectorizion(forklift.CLASS_WALL, new NumericVariableFeatures());
+*/
+		int nTilings = 9;
+		double resolution = 10.;
+		
+		double xWidth = (forklift.xBound) / resolution;
+		double yWidth = (forklift.yBound) / resolution;
+		double velocityWidth = 20 / resolution;
+		double angleVelocityWidth = 30 / resolution;
+		double angleWidth = 360 / resolution;
+		double xWidthRes = 2 / resolution;
+		double yWidthRes = 1 / resolution;
+		double magWidth = velocityWidth * velocityWidth;
+		
+		
+		
+		TileCodingFeatures tilecoding = new TileCodingFeatures(inputFeatures);
+		tilecoding.addTilingsForAllDimensionsWithWidths(
+				new double []{xWidth, yWidth, velocityWidth, velocityWidth, angleVelocityWidth, angleWidth, yWidthRes, xWidthRes, magWidth},
+				nTilings,
+				TilingArrangement.RANDOM_JITTER);
+		
+		double defaultQ = 0.5;
+		DifferentiableStateActionValue vfa = tilecoding.generateVFA(defaultQ/nTilings);
+		GradientDescentSarsaLam ag = new GradientDescentSarsaLam(domain, 0.99, vfa, 0.02, 0.5);
+		
+		List episodes = new ArrayList();
+		for(int i = 0; i < 5000; i++){
+			System.out.println("Starting episode");
+			Episode ea = ag.runLearningEpisode(env);
+			episodes.add(ea);
+			System.out.println(i + ": " + ea.maxTimeStep());
+			env.resetEnvironment();
+		}
+		new EpisodeSequenceVisualizer(v, domain, episodes);
+		
+		/*SparseSampling ss = new SparseSampling(domain, 1, new SimpleHashableStateFactory(), 2, 1);
 		ss.setForgetPreviousPlanResults(true);
 		ss.toggleDebugPrinting(true);
 		Policy p = new GreedyQPolicy(ss);
 		
-		Episode e = PolicyUtils.rollout(p, state, domain.getModel(), 50);
+		Episode e = PolicyUtils.rollout(p, state, domain.getModel(), 1000);
 		System.out.println("Num steps: " + e.maxTimeStep());
 		
 		new EpisodeSequenceVisualizer(v, domain, Arrays.asList(e));
 	
-		*/
+		StateGenerator rStateGen
 		VisualExplorer exp = new VisualExplorer(domain, env, v);
 
 		exp.addKeyAction("w", forklift.MOVE_FORWARD, "");
@@ -95,7 +137,7 @@ public class ForkliftClass {
 		exp.addKeyAction("q", forklift.PICKUP, "");
 		exp.addKeyAction("e", forklift.DROP, "");
 
-		exp.initGUI();
+		exp.initGUI();*/
 		
 	}
 	

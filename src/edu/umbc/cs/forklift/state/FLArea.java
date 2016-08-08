@@ -22,7 +22,7 @@ public class FLArea implements ObjectInstance {
 	private String name;
 	private static String className;
 	
-	private static final List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_W, ATT_Y, ATT_L, ATT_N);
+	private static final List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_W, ATT_Y, ATT_L);
 
 	public FLArea(double l, double r, double t, double b, String name) {
 		this.left = l;
@@ -47,8 +47,6 @@ public class FLArea implements ObjectInstance {
 				return top;
 			else if(variableKey.equals(ATT_L))
 				return bot;
-			else if(variableKey.equals(ATT_N))
-				return name;
 			else
 				throw new RuntimeException("Unknown key " + variableKey);
 		
@@ -58,7 +56,6 @@ public class FLArea implements ObjectInstance {
 					case 1:	return right;
 					case 2: return top;
 					case 3: return bot;
-					case 4: return name;
 					default: throw new RuntimeException("Unknown key " + variableKey);
 				}
 		//if key is not string or integer
