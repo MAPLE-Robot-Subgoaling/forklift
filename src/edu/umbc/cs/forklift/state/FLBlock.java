@@ -18,15 +18,15 @@ import burlap.mdp.core.oo.state.ObjectInstance;
 
 public class FLBlock implements ObjectInstance {
 
-	private double x;
-	private double y;
-	private double yLength;
-	private double xWidth;
-	private String name;
+	protected double x;
+	protected double y;
+	protected double yLength;
+	protected double xWidth;
+	protected String name;
 	protected String className;
 
 	
-	private List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_W, ATT_L);
+	protected List<Object> keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_W, ATT_L);
 	
 	public FLBlock(double x, double y, double yLength, double xWidth, String name) {
 		this.x = x;
@@ -86,12 +86,12 @@ public class FLBlock implements ObjectInstance {
 	}
 	public static class FLBox extends FLBlock{
 		boolean onGround;
-		public FLBox(double x, double y, double yLength, double xWidth, String name) {
+		public FLBox(double x, double y, double yLength, double xWidth, String name, boolean onGround) {
 			super(x, y, yLength, xWidth, name);
 			super.className = CLASS_BOX;
 			//super.keys = Arrays.<Object>asList(ATT_X, ATT_Y, ATT_W, ATT_L, ATT_N, ATT_O);
 
-			onGround = true;
+			this.onGround = onGround;
 		}
 		public boolean pickUp(){
 			//if the box is not on the ground, return false and do nothing
@@ -129,6 +129,11 @@ public class FLBlock implements ObjectInstance {
 				}
 			}	
 			throw new RuntimeException("Unknown key " + variableKey);		
+		}
+		
+		public FLBox copy()
+		{
+			return new FLBox(x, y, yLength, xWidth, name, onGround);
 		}
 	}
 	public static class FLWall extends FLBlock{

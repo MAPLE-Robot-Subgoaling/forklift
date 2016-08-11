@@ -41,7 +41,7 @@ public class ForkliftClass {
 		
 		ArrayList<FLBlock> walls = new ArrayList<FLBlock>();
 		ArrayList<FLBlock> boxes = new ArrayList<FLBlock>(); 
-		FLBlock box = new FLBlock.FLBox(10.0, 10.0, 2, 2, "Boxer");
+		FLBlock box = new FLBlock.FLBox(10.0, 10.0, 2, 2, "Boxer", true);
 		boxes.add(box);
 
 		ArrayList<Point2D.Double> gaps = new ArrayList<Point2D.Double>();
@@ -86,8 +86,8 @@ public class ForkliftClass {
 		
 		double xWidth = (forklift.xBound) / resolution;
 		double yWidth = (forklift.yBound) / resolution;
-		double velocityWidth = 20 / resolution;
-		double angleVelocityWidth = 30 / resolution;
+		double velocityWidth = 40 / resolution;
+		double angleVelocityWidth = 60 / resolution;
 		double angleWidth = 360 / resolution;
 		double xWidthRes = 2 / resolution;
 		double yWidthRes = 1 / resolution;

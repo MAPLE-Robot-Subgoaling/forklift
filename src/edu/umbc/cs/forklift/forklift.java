@@ -207,7 +207,7 @@ public class forklift implements DomainGenerator{
 								@SuppressWarnings("unchecked")
 								List<FLBlock> boxes = (List<FLBlock>)s.get(CLASS_BOX);
 								boxes.remove(b);
-								FLBox box = new FLBox(px + dx, py + dy, (Double)b.get(ATT_L), (Double)b.get(ATT_W), (String) b.name());
+								FLBox box = new FLBox(px + dx, py + dy, (Double)b.get(ATT_L), (Double)b.get(ATT_W), (String) b.name(), true);
 								boxes.add(box);
 								((FLState) s).set(CLASS_BOX,boxes);
 								b = null;
