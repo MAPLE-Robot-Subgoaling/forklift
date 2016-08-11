@@ -329,7 +329,30 @@ public class forklift implements DomainGenerator{
 				blockPoints.add(new Point2D.Double(blockX + blockW, blockY));
 				blockPoints.add(new Point2D.Double(blockX + blockW, blockY + blockL));
 				
-				if(checkSingleCollision(forkliftPoints, blockPoints))
+				double dw1 = Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2;
+				double dw2 = Math.cos(Math.toRadians(360-direction)) * w/2 - Math.cos(Math.toRadians(450-direction)) * l/2;
+				
+				double dl1 = Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;
+				double dl2 = Math.sin(Math.toRadians(360-direction)) * w/2 - Math.sin(Math.toRadians(450-direction)) * l/2;
+				
+				double dw, dl;
+				
+				if(dl1 > dl2)
+					dl = dw1;
+				else
+					dl = dl2;
+				if(dw1 > dw2)
+					dw = dw1;
+				else
+					dw = dw2;
+				
+				double blockCenterX = blockX + blockW/2;
+				double blockCenterY = blockY + blockL/2;
+				
+				double dx = Math.abs(x - blockCenterX);
+				double dy = Math.abs(y - blockCenterY);
+				
+				if(dx < blockW + dw && dy < blockY + dl && checkSingleCollision(forkliftPoints, blockPoints))
 				{
 					return true;
 				}
@@ -366,7 +389,20 @@ public class forklift implements DomainGenerator{
 				blockPoints.add(new Point2D.Double(blockX + blockW, blockY));
 				blockPoints.add(new Point2D.Double(blockX + blockW, blockY + blockL));
 				
-				if(checkSingleCollision(boxPoints, blockPoints))
+				double boxCenterX = x + w/2;
+				double boxCenterY = y + l/2;
+				
+				double blockCenterX = blockX + blockW/2;
+				double blockCenterY = blockY + blockL/2;
+				
+				double dx = Math.abs(boxCenterX - blockCenterX);
+				double dy = Math.abs(boxCenterY - blockCenterY);
+				
+				//double dist = Math.sqrt(dx * dx + dy * dy);
+				
+				
+				
+				if(dx < blockW + w && dy < blockY + y && checkSingleCollision(boxPoints, blockPoints))
 				{
 					return true;
 				}
