@@ -352,7 +352,7 @@ public class forklift implements DomainGenerator{
 				double dx = Math.abs(x - blockCenterX);
 				double dy = Math.abs(y - blockCenterY);
 				
-				if(dx < blockW + dw && dy < blockY + dl && checkSingleCollision(forkliftPoints, blockPoints))
+				if(dx < blockW + dw*2 && dy < blockL + dl*2 && checkSingleCollision(forkliftPoints, blockPoints))
 				{
 					return true;
 				}
@@ -399,8 +399,6 @@ public class forklift implements DomainGenerator{
 				double dy = Math.abs(boxCenterY - blockCenterY);
 				
 				//double dist = Math.sqrt(dx * dx + dy * dy);
-				
-				
 				
 				if(dx < blockW + w && dy < blockY + y && checkSingleCollision(boxPoints, blockPoints))
 				{

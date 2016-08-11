@@ -74,13 +74,13 @@ public class ForkliftClass {
 		FLVisualizer flv = new FLVisualizer();
 		Visualizer v = flv.getVisualizer();
 		
-		ConcatenatedObjectFeatures inputFeatures = new ConcatenatedObjectFeatures()
+		/*ConcatenatedObjectFeatures inputFeatures = new ConcatenatedObjectFeatures()
 				.addObjectVectorizion(forklift.CLASS_AGENT, new NumericVariableFeatures());
 				/*.addObjectVectorizion(forklift.CLASS_AREA, new NumericVariableFeatures())
 				.addObjectVectorizion(forklift.CLASS_BLOCK, new NumericVariableFeatures())
 				.addObjectVectorizion(forklift.CLASS_BOX, new NumericVariableFeatures())
 				.addObjectVectorizion(forklift.CLASS_WALL, new NumericVariableFeatures());
-*/
+
 		int nTilings = 9;
 		double resolution = 10.;
 		
@@ -126,6 +126,7 @@ public class ForkliftClass {
 		new EpisodeSequenceVisualizer(v, domain, Arrays.asList(e));
 	
 		StateGenerator rStateGen
+		*/
 		VisualExplorer exp = new VisualExplorer(domain, env, v);
 
 		exp.addKeyAction("w", forklift.MOVE_FORWARD, "");
@@ -137,7 +138,7 @@ public class ForkliftClass {
 		exp.addKeyAction("q", forklift.PICKUP, "");
 		exp.addKeyAction("e", forklift.DROP, "");
 
-		exp.initGUI();*/
+		exp.initGUI();
 		
 	}
 	
