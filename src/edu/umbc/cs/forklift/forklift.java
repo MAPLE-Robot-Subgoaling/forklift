@@ -290,12 +290,10 @@ public class forklift implements DomainGenerator{
 		
 		public boolean agentCollisionCheck(State s, double x, double y, double w, double l, double direction)
 		{
+			//System.out.println("\nCOLLISIONS!! \n");
 			List<ObjectInstance> blocks =  ((MutableOOState) s).objectsOfClass(CLASS_WALL);
 			blocks.addAll(((MutableOOState) s).objectsOfClass(CLASS_BOX));
 			Double x1, x2, x3, x4, y1, y2, y3, y4;
-			/*Double dx = Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2;
-			Double dy = Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;
-			System.out.println(360 - direction);*/
 			x1 = x + Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2;
 			y1 = y + Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;
 			x2 = x + Math.cos(Math.toRadians(360-direction)) * w/2 - Math.cos(Math.toRadians(450-direction)) * l/2;
@@ -329,11 +327,11 @@ public class forklift implements DomainGenerator{
 				blockPoints.add(new Point2D.Double(blockX + blockW, blockY));
 				blockPoints.add(new Point2D.Double(blockX + blockW, blockY + blockL));
 				
-				double dw1 = Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2;
-				double dw2 = Math.cos(Math.toRadians(360-direction)) * w/2 - Math.cos(Math.toRadians(450-direction)) * l/2;
+				double dw1 = Math.abs(Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2);
+				double dw2 = Math.abs(Math.cos(Math.toRadians(360-direction)) * w/2 - Math.cos(Math.toRadians(450-direction)) * l/2);
 				
-				double dl1 = Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;
-				double dl2 = Math.sin(Math.toRadians(360-direction)) * w/2 - Math.sin(Math.toRadians(450-direction)) * l/2;
+				double dl1 = Math.abs(Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2);
+				double dl2 = Math.abs(Math.sin(Math.toRadians(360-direction)) * w/2 - Math.sin(Math.toRadians(450-direction)) * l/2);
 				
 				double dw, dl;
 				
@@ -352,9 +350,13 @@ public class forklift implements DomainGenerator{
 				double dx = Math.abs(x - blockCenterX);
 				double dy = Math.abs(y - blockCenterY);
 				
-				if(dx < blockW + dw*2 && dy < blockL + dl*2 && checkSingleCollision(forkliftPoints, blockPoints))
-				{
-					return true;
+				if(dx < blockW + dw*2 && dy < blockL + dl*2){ 
+					//System.out.println(x + " " + y);
+					//System.out.println(blockX + " " + blockY);
+					if(checkSingleCollision(forkliftPoints, blockPoints))
+					{
+						return true;
+					}
 				}
 			}
 			return false;
@@ -400,9 +402,11 @@ public class forklift implements DomainGenerator{
 				
 				//double dist = Math.sqrt(dx * dx + dy * dy);
 				
-				if(dx < blockW + w && dy < blockY + y && checkSingleCollision(boxPoints, blockPoints))
-				{
-					return true;
+				if(dx < blockW + w && dy < blockY + y){ 
+					if(checkSingleCollision(boxPoints, blockPoints))
+					{
+						return true;
+					}
 				}
 			}
 			return false;
