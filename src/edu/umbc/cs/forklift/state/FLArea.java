@@ -61,7 +61,7 @@ public class FLArea implements ObjectInstance {
 		//if key is not string or integer
 		throw new RuntimeException("Unknown key " + variableKey);
 	}
-	public State copy() {
+	public FLArea copy() {
 		return new FLArea(left, right, top, bot, name);
 	}
 	public String className() {

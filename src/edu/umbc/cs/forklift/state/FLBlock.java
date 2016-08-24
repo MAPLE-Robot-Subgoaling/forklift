@@ -131,7 +131,7 @@ public class FLBlock implements ObjectInstance {
 			throw new RuntimeException("Unknown key " + variableKey);		
 		}
 		
-		public FLBox copy()
+		public FLBlock copy()
 		{
 			return new FLBox(x, y, yLength, xWidth, name, onGround);
 		}

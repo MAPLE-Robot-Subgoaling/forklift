@@ -43,7 +43,15 @@ public class FLState implements MutableOOState{
 		this.goal = goal;
 	}
 	public FLState copy() {
-		return new FLState(agent, walls, boxes, goal);
+		List<FLBlock> newWalls = new ArrayList<FLBlock>();
+		List<FLBlock> newBoxes = new ArrayList<FLBlock>();
+		for(FLBlock w: walls){
+			newWalls.add(w.copy());
+		}
+		for(FLBlock b: boxes){
+			newBoxes.add(b.copy());
+		}
+		return new FLState(agent.copy(), newWalls, newBoxes, goal.copy());
 	}
 	
 	public List<Object> variableKeys() {
@@ -158,7 +166,7 @@ public class FLState implements MutableOOState{
 		if(key.equals(CLASS_AGENT))
 			agent = (FLAgent) value;
 		else if(key.equals(CLASS_AREA))
-			goal = (FLArea) goal;
+			goal = (FLArea) value;
 		else if(key.equals(CLASS_WALL))
 			walls = (List<FLBlock>) value;
 		else if(key.equals(CLASS_BOX))

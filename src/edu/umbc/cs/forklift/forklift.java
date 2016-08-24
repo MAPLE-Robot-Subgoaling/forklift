@@ -67,6 +67,7 @@ public class forklift implements DomainGenerator{
 	public static final String CLASS_BOX = "box";
 	public static final String CLASS_AREA = "area";
 	public static final String BOXES_IN_AREA = "depot";
+	public static final String CAN_PICKUP = "Can Pickup box";
 
 	
 	public static final double xBound = 40;
@@ -91,7 +92,7 @@ public class forklift implements DomainGenerator{
 	}
 	public List<PropositionalFunction> generatePfs(){
 		return Arrays.asList(
-				(PropositionalFunction)new BoxesInArea(forklift.BOXES_IN_AREA));
+				(PropositionalFunction)new BoxesInArea(forklift.BOXES_IN_AREA), (PropositionalFunction)new CanPickup(CAN_PICKUP));
 	}
 	
 	public TerminalFunction getTf() {
@@ -132,7 +133,7 @@ public class forklift implements DomainGenerator{
 				);
 		
 		FLModel fmodel = new FLModel(forwardAccel, backwardAccel, rotAccel);
-		RewardFunction rf = new SingleGoalPFRF(domain.propFunction(forklift.BOXES_IN_AREA));
+		RewardFunction rf = new SingleGoalPFRF(domain.propFunction(forklift.BOXES_IN_AREA), 1000, -1);
 		TerminalFunction tf = new SinglePFTF(domain.propFunction(forklift.BOXES_IN_AREA));
 		FactoredModel factorModel = new FactoredModel(fmodel, rf, tf);
 		domain.setModel(factorModel);
@@ -203,15 +204,24 @@ public class forklift implements DomainGenerator{
 							Double dy = Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;
 							if(!objectCollisionCheck(s, px + dx, py + dy, (Double)b.get(ATT_L), (Double)b.get(ATT_W)))
 							{
-								b.putDown();
-								@SuppressWarnings("unchecked")
-								List<FLBlock> boxes = (List<FLBlock>)s.get(CLASS_BOX);
-								boxes.remove(b);
-								FLBox box = new FLBox(px + dx, py + dy, (Double)b.get(ATT_L), (Double)b.get(ATT_W), (String) b.name(), true);
-								boxes.add(box);
-								((FLState) s).set(CLASS_BOX,boxes);
-								b = null;
-								//System.out.println("dropped");
+								if(b.putDown()){
+									@SuppressWarnings("unchecked")
+									List<FLBlock> boxes = (List<FLBlock>)s.get(CLASS_BOX);
+									boxes.remove(b);
+									double boxW = (Double)b.get(ATT_W);
+									if(dx < 0){
+										boxW *= -1;
+									}
+									double boxL = (Double)b.get(ATT_L);
+									if(dy < 0){
+										boxL *= -1;
+									}
+									FLBox box = new FLBox(px + dx + boxW/2, py + dy - boxL/2, (Double)b.get(ATT_L), (Double)b.get(ATT_W), (String) b.name(), true);
+									boxes.add(box);
+									((FLState) s).set(CLASS_BOX,boxes);
+									b = null;
+									//System.out.println("dropped");
+								}
 							}
 					}
 				}
@@ -226,7 +236,9 @@ public class forklift implements DomainGenerator{
 					if(picked != null)
 					{
 						b = picked;
-						picked.pickUp();
+						if(!b.pickUp()){
+							b = null;
+						}
 						//System.out.println("picked up");
 					}
 				}
@@ -351,8 +363,6 @@ public class forklift implements DomainGenerator{
 				double dy = Math.abs(y - blockCenterY);
 				
 				if(dx < blockW + dw*2 && dy < blockL + dl*2){ 
-					//System.out.println(x + " " + y);
-					//System.out.println(blockX + " " + blockY);
 					if(checkSingleCollision(forkliftPoints, blockPoints))
 					{
 						return true;
@@ -563,33 +573,21 @@ public class forklift implements DomainGenerator{
 			return false;
 		}
 		
-		public FLBlock.FLBox pickup(State s, double x, double y, double w, double l, double direction)
+		public static FLBlock.FLBox pickup(State s, double x, double y, double w, double l, double direction)
 		{
 			List<ObjectInstance> blocks = ((MutableOOState) s).objectsOfClass(CLASS_BOX);
 			ArrayList<Line2D.Double> test = new ArrayList<Line2D.Double>(); 
 			Double x1, x2, x3, x4, y1, y2, y3, y4;
-			/*
-			Double dx = Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2;
-			Double dy = Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;
-			System.out.println(dx + " " + dy);
-			System.out.println(x + " " + y);
-			*/
 			x1 = x + Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2;
-			y1 = y + Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;;
+			y1 = y + Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;
 			x2 = x + Math.cos(Math.toRadians(360-direction)) * w/2 - Math.cos(Math.toRadians(450-direction)) * l/2;
-			y2 = y + Math.sin(Math.toRadians(360-direction)) * w/2 - Math.sin(Math.toRadians(450-direction)) * l/2;;
+			y2 = y + Math.sin(Math.toRadians(360-direction)) * w/2 - Math.sin(Math.toRadians(450-direction)) * l/2;
 			x3 = x - Math.cos(Math.toRadians(360-direction)) * w/2 + Math.cos(Math.toRadians(450-direction)) * l/2;
-			y3 = y - Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;;
+			y3 = y - Math.sin(Math.toRadians(360-direction)) * w/2 + Math.sin(Math.toRadians(450-direction)) * l/2;
 			x4 = x - Math.cos(Math.toRadians(360-direction)) * w/2 - Math.cos(Math.toRadians(450-direction)) * l/2;
-			y4 = y - Math.sin(Math.toRadians(360-direction)) * w/2 - Math.sin(Math.toRadians(450-direction)) * l/2;;
-			/*System.out.println(x1 + " " + y1);
-			System.out.println(x2 + " " + y2);
-			System.out.println(x3 + " " + y3);
-			System.out.println(x4 + " " + y4);*/
-			//test.add(new Line2D.Double(x1, y1, x2, y2));
+			y4 = y - Math.sin(Math.toRadians(360-direction)) * w/2 - Math.sin(Math.toRadians(450-direction)) * l/2;
 			test.add(new Line2D.Double(x1, y1, x3, y3));
 			test.add(new Line2D.Double(x2, y2, x4, y4));
-			//test.add(new Line2D.Double(x3, y3, x4, y4));
 			for(ObjectInstance block: blocks)
 			{
 				
@@ -745,6 +743,27 @@ public class forklift implements DomainGenerator{
 				
 			//System.out.println(allInArea);
 			return allInArea;
+		}
+	}
+	public static class CanPickup extends PropositionalFunction{
+		public CanPickup(String name){
+			super(name, new String[]{CLASS_AGENT});
+		}
+
+		@Override
+		public boolean isTrue(OOState s, String... params) {
+			FLAgent ag = (FLAgent) s.get(CLASS_AGENT);
+			double x, y, w, l, d;
+			x = (Double) ag.get(ATT_X);
+			y = (Double) ag.get(ATT_Y);
+			w = (Double) ag.get(ATT_W);
+			l = (Double) ag.get(ATT_L);
+			d = (Double) ag.get(ATT_D);
+			FLBox g = (FLBox) ag.getGrabbed();
+			
+			if(g != null && FLModel.pickup((State)s, x, y, w, l, d) != null)
+				return true;
+			return false;
 		}
 	}
 	

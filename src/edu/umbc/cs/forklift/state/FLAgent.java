@@ -76,21 +76,23 @@ public class FLAgent implements ObjectInstance {
 			else
 				throw new RuntimeException("Unknown key " + variableKey);
 		//TODO test this set method
+		//System.out.println(variableKey instanceof Integer);
 		if(variableKey instanceof Integer)
 			switch((Integer)variableKey){
-				case 0:	x = (Double) v;;
-				case 1:	y = (Double) v;
+				case 0:	x = (Double) v;break;
+				case 1:	y = (Double) v;break;
 				case 2: vx = (Double) v; break;
 				case 3: vy = (Double) v; break;
 				case 4: vr = (Double) v; break;
-				case 5: direction = (Double) v;
-				case 6: xWidth = (Double) v;
-				case 7: yLength = (Double) v;
-				case 8: vm = (Double)v;
+				case 5: direction = (Double) v;break;
+				case 6: xWidth = (Double) v;break;
+				case 7: yLength = (Double) v;break;
+				case 8: vm = (Double)v;break;
 				default: throw new RuntimeException("Unknown key " + variableKey);
 			}
 		//if key is not string or integer
-		throw new RuntimeException("Unknown key " + variableKey);
+		else
+			throw new RuntimeException("Unknown key " + variableKey);
 	}
 	
 	public Object get(Object variableKey) {

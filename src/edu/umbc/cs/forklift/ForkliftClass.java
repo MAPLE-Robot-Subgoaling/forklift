@@ -37,12 +37,16 @@ public class ForkliftClass {
 		forklift gen = new forklift();
 		SADomain domain = gen.generateDomain();
 
-		FLAgent agent = new FLAgent(2.5, 2.0, 0, 0, 0, 0, 1, 2,"agent", null, 0);
+		FLAgent agent = new FLAgent(15.8, 10.0, 0, 0, 0, 0, 1, 2,"agent", null, 0);
 		
 		ArrayList<FLBlock> walls = new ArrayList<FLBlock>();
 		ArrayList<FLBlock> boxes = new ArrayList<FLBlock>(); 
-		FLBlock box = new FLBlock.FLBox(10.0, 10.0, 2, 2, "Boxer", false);
+		FLBlock box = new FLBlock.FLBox(17.0, 9.0, 2, 2, "Box1", true);
+		FLAgent test = agent.copy();
+		test.set(forklift.ATT_X, 10.0);
 		boxes.add(box);
+		boxes.add(new FLBlock.FLBox(25, 25, 2, 2, "Box2", true));
+		boxes.add(new FLBlock.FLBox(35, 35, 2, 2, "Box3", true));
 
 		ArrayList<Point2D.Double> gaps = new ArrayList<Point2D.Double>();
 		gaps.add(new Point2D.Double(10.0,20.0));
@@ -69,20 +73,15 @@ public class ForkliftClass {
 
 		FLState state = new FLState(agent, walls, boxes, goalArea);
 		System.out.println(domain.getModel().terminal(state));
-		SimulatedEnvironment env = new SimulatedEnvironment(domain, state);
+		SimulatedEnvironment env = new SimulatedEnvironment(domain, state.copy());
 		
 		FLVisualizer flv = new FLVisualizer();
 		Visualizer v = flv.getVisualizer();
 		
-		ConcatenatedObjectFeatures inputFeatures = new ConcatenatedObjectFeatures()
+		/*ConcatenatedObjectFeatures inputFeatures = new ConcatenatedObjectFeatures()
 				.addObjectVectorizion(forklift.CLASS_AGENT, new NumericVariableFeatures());
-				/*.addObjectVectorizion(forklift.CLASS_AREA, new NumericVariableFeatures())
-				.addObjectVectorizion(forklift.CLASS_BLOCK, new NumericVariableFeatures())
-				.addObjectVectorizion(forklift.CLASS_BOX, new NumericVariableFeatures())
-				.addObjectVectorizion(forklift.CLASS_WALL, new NumericVariableFeatures());
-*/
 		int nTilings = 9;
-		double resolution = 10.;
+		double resolution = 50.;
 		
 		double xWidth = (forklift.xBound) / resolution;
 		double yWidth = (forklift.yBound) / resolution;
@@ -106,26 +105,15 @@ public class ForkliftClass {
 		GradientDescentSarsaLam ag = new GradientDescentSarsaLam(domain, 0.99, vfa, 0.02, 0.5);
 		
 		List episodes = new ArrayList();
-		for(int i = 0; i < 5000; i++){
+		for(int i = 0; i < 20; i++){
 			System.out.println("Starting episode");
-			Episode ea = ag.runLearningEpisode(env);
+			Episode ea = ag.runLearningEpisode(env, 500);
 			episodes.add(ea);
 			System.out.println(i + ": " + ea.maxTimeStep());
-			env.resetEnvironment();
+			env.setCurStateTo(state.copy());
 		}
 		new EpisodeSequenceVisualizer(v, domain, episodes);
-		
-		/*SparseSampling ss = new SparseSampling(domain, 1, new SimpleHashableStateFactory(), 2, 1);
-		ss.setForgetPreviousPlanResults(true);
-		ss.toggleDebugPrinting(true);
-		Policy p = new GreedyQPolicy(ss);
-		
-		Episode e = PolicyUtils.rollout(p, state, domain.getModel(), 1000);
-		System.out.println("Num steps: " + e.maxTimeStep());
-		
-		new EpisodeSequenceVisualizer(v, domain, Arrays.asList(e));
-	
-		StateGenerator rStateGen
+		*/
 		VisualExplorer exp = new VisualExplorer(domain, env, v);
 
 		exp.addKeyAction("w", forklift.MOVE_FORWARD, "");
@@ -137,7 +125,7 @@ public class ForkliftClass {
 		exp.addKeyAction("q", forklift.PICKUP, "");
 		exp.addKeyAction("e", forklift.DROP, "");
 
-		exp.initGUI();*/
+		exp.initGUI();
 		
 	}
 	
